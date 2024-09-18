@@ -1,10 +1,23 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import Activity from "../components/Activity";
+import { Input } from "../components/ui/input";
+import AddActivity from "../features/Activity/AddActivity";
+import ActivityList from "../features/Activity/ActivityList";
 
 export const Route = createLazyFileRoute("/activity")({
-  component: () => <Index />,
+  component: () => <Activity />,
 });
 
-function Index() {
-  return <Activity />;
+function Activity() {
+  return (
+    <main className="flex h-full w-full flex-col items-center gap-[48px] p-8">
+      <h1 className="self-start text-3xl font-bold">Activity</h1>
+
+      <div className="flex w-full items-center justify-between gap-2">
+        <Input placeholder="Search" type="search" className="w-[50%]" />
+        <AddActivity />
+      </div>
+
+      <ActivityList />
+    </main>
+  );
 }

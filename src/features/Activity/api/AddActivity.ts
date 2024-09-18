@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
-import { supabase } from "../../lib/supabase";
-import { queryClient } from "../../main";
+import { supabase } from "../../../lib/supabase";
+import { queryClient } from "../../../main";
 
 type Props = {
   body: any;

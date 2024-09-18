@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "../../../lib/supabase";
 
 export const getActivityAPI = async () => {
   const { data, error } = await supabase.from("budget_activity").select(`
