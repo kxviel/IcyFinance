@@ -1,0 +1,13 @@
+// activity_is_part_of_budget.txt
+
+CREATE OR REPLACE FUNCTION activity_is_part_of_budget(
+    budget_id int,
+) RETURNS void AS $$
+
+BEGIN
+
+    IF budget_id IS NULL THEN
+        RAISE EXCEPTION 'budget_id cannot be null';
+    END IF;
+
+END $$ LANGUAGE plpgsql;

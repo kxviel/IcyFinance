@@ -1,0 +1,260 @@
+import { Button } from "../ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
+import { Input } from "../ui/input";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { Checkbox } from "../ui/checkbox";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useAddActivity } from "./addActivity";
+import { useGetActivities } from "./getActivities";
+import { useGetBudgets } from "../Budget/getBudgets";
+
+const formSchema = z.object({
+  activity_title: z.string().min(2, {
+    message: "title must be at least 2 characters.",
+  }),
+  activity_amount: z
+    .number({
+      invalid_type_error: "budget must be a number.",
+    })
+    .min(0, {
+      message: "budget must be greater than 0.",
+    })
+    .max(1000000, {
+      message: "budget must be less than 1,000,000.",
+    }),
+  budget_id: z.string().optional(),
+  part_of_budget: z.boolean(),
+});
+
+export default function Activity() {
+  const { data: activityList } = useGetActivities();
+  const { data: budgetList } = useGetBudgets();
+
+  const addActivity = useAddActivity();
+
+  // 1. Define your form.
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      activity_title: "",
+      activity_amount: 0,
+      part_of_budget: true,
+    },
+  });
+
+  // 2. Define a submit handler.
+  function onSubmit({ part_of_budget, ...values }: z.infer<typeof formSchema>) {
+    const body = {
+      ...values,
+      budget_id: part_of_budget ? values.budget_id : null,
+    };
+
+    addActivity.mutate({
+      body,
+    });
+  }
+
+  return (
+    <main className="flex h-full w-full flex-col items-center gap-[48px] p-8">
+      <h1 className="self-start text-3xl font-bold">Activity</h1>
+
+      <div className="flex w-full items-center justify-between gap-2">
+        <Input placeholder="Search" type="search" className="w-[50%]" />
+
+        <Dialog>
+          <DialogTrigger>
+            <Button>Add Expense</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Add Expense</DialogTitle>
+              <DialogDescription>
+                Enter the details of your new expense.
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...form}>
+              <form className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="activity_title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Budget Title</FormLabel>
+                      <FormControl>
+                        <Input
+                          className="col-span-3"
+                          placeholder="Housing Expense"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Enter the title of your budget.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="activity_amount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Budget Amount</FormLabel>
+                      <FormControl>
+                        <Input
+                          className="col-span-3"
+                          placeholder="$100"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(Number(e.target.value))
+                          }
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Enter the amount of your budget.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="flex items-center gap-2">
+                  <FormField
+                    name="part_of_budget"
+                    control={form.control}
+                    render={({ field: { onChange, value } }) => (
+                      <Checkbox
+                        id="terms"
+                        onCheckedChange={onChange}
+                        checked={!!value}
+                      />
+                    )}
+                  />
+
+                  <label htmlFor="terms1" className="text-sm font-medium">
+                    Is this a part of a budget?
+                  </label>
+                </div>
+
+                <FormField
+                  name="budget_id"
+                  control={form.control}
+                  render={({
+                    field: { onChange, value },
+                    fieldState: { error },
+                  }) => (
+                    <div>
+                      <Select
+                        onValueChange={onChange}
+                        value={value}
+                        disabled={!form.watch("part_of_budget")}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Part of Budget" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {budgetList &&
+                              budgetList.map((option) => (
+                                <SelectItem
+                                  key={option.id}
+                                  value={option.id.toString()}
+                                >
+                                  {option.title}
+                                </SelectItem>
+                              ))}{" "}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                      {error && (
+                        <p className="mt-1 text-sm text-red-500">
+                          {error.message}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                />
+              </form>
+            </Form>
+            <DialogFooter>
+              <Button type="submit" onClick={form.handleSubmit(onSubmit)}>
+                Save Expense
+              </Button>
+
+              <DialogClose asChild>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => {
+                    form.reset();
+                  }}
+                >
+                  Close
+                </Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+      <Table>
+        <TableCaption>A list of your recent activities.</TableCaption>
+        <TableHeader className="bg-white">
+          <TableRow>
+            <TableHead>Activity Title</TableHead>
+            <TableHead>Amount</TableHead>
+            <TableHead>Part of Budget</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody className="border-b border-slate-200">
+          {activityList &&
+            activityList.map((item) => (
+              <TableRow key={item.id}>
+                <TableCell className="font-medium">
+                  {item.activity_title}
+                </TableCell>
+                <TableCell>${item.activity_amount}</TableCell>
+                <TableCell>{item.budget ? item.budget?.title : "-"}</TableCell>
+              </TableRow>
+            ))}
+        </TableBody>
+      </Table>
+    </main>
+  );
+}
