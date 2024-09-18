@@ -1,10 +1,7 @@
-import { Link, useMatchRoute } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { Wallet, ChartBarDecreasing, Omega } from "lucide-react";
 
 export const Sidebar = () => {
-  const matchRoute = useMatchRoute();
-  console.log(matchRoute);
-
   return (
     <div className="flex h-screen bg-background">
       <div className="flex flex-col items-center border-r border-border bg-background px-4 py-6">

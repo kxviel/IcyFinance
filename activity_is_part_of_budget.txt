@@ -1,13 +1,14 @@
 // activity_is_part_of_budget.txt
 
-CREATE OR REPLACE FUNCTION activity_is_part_of_budget(
-    budget_id int,
-) RETURNS void AS $$
-
 BEGIN
 
-    IF budget_id IS NULL THEN
-        RAISE EXCEPTION 'budget_id cannot be null';
-    END IF;
+  INSERT INTO budget_activity(activity_title, activity_amount, budget_id)
+  VALUES (activity_title, activity_amount, budget_id);
 
-END $$ LANGUAGE plpgsql;
+  UPDATE budget
+  SET 
+    activity = activity + activity_amount,
+    amount_available = assigned_budget - (activity + activity_amount)
+  WHERE id = budget_id;
+
+END;

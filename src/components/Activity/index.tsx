@@ -44,23 +44,38 @@ import { useAddActivity } from "./addActivity";
 import { useGetActivities } from "./getActivities";
 import { useGetBudgets } from "../Budget/getBudgets";
 
-const formSchema = z.object({
-  activity_title: z.string().min(2, {
-    message: "title must be at least 2 characters.",
-  }),
-  activity_amount: z
-    .number({
-      invalid_type_error: "budget must be a number.",
-    })
-    .min(0, {
-      message: "budget must be greater than 0.",
-    })
-    .max(1000000, {
-      message: "budget must be less than 1,000,000.",
+const formSchema = z
+  .object({
+    activity_title: z.string().min(2, {
+      message: "title must be at least 2 characters.",
     }),
-  budget_id: z.string().optional(),
-  part_of_budget: z.boolean(),
-});
+    activity_amount: z
+      .number({
+        invalid_type_error: "budget must be a number.",
+      })
+      .min(0, {
+        message: "budget must be greater than 0.",
+      })
+      .max(1000000, {
+        message: "budget must be less than 1,000,000.",
+      }),
+    part_of_budget: z.boolean(),
+    budget_id: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.part_of_budget) {
+        return data.budget_id !== undefined && data.budget_id !== "";
+      }
+      return true;
+    },
+    {
+      message: "budget_id is required when part_of_budget is true",
+      path: ["budget_id"],
+    },
+  );
+
+export type Activity = z.infer<typeof formSchema>;
 
 export default function Activity() {
   const { data: activityList } = useGetActivities();
@@ -69,7 +84,7 @@ export default function Activity() {
   const addActivity = useAddActivity();
 
   // 1. Define your form.
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<Activity>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       activity_title: "",
@@ -79,7 +94,7 @@ export default function Activity() {
   });
 
   // 2. Define a submit handler.
-  function onSubmit({ part_of_budget, ...values }: z.infer<typeof formSchema>) {
+  function onSubmit({ part_of_budget, ...values }: Activity) {
     const body = {
       ...values,
       budget_id: part_of_budget ? values.budget_id : null,
@@ -115,7 +130,7 @@ export default function Activity() {
                   name="activity_title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Budget Title</FormLabel>
+                      <FormLabel>Activity Title</FormLabel>
                       <FormControl>
                         <Input
                           className="col-span-3"
@@ -124,7 +139,7 @@ export default function Activity() {
                         />
                       </FormControl>
                       <FormDescription>
-                        Enter the title of your budget.
+                        Enter the title of your Activity.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -136,7 +151,7 @@ export default function Activity() {
                   name="activity_amount"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Budget Amount</FormLabel>
+                      <FormLabel>Activity Amount</FormLabel>
                       <FormControl>
                         <Input
                           className="col-span-3"
@@ -148,7 +163,7 @@ export default function Activity() {
                         />
                       </FormControl>
                       <FormDescription>
-                        Enter the amount of your budget.
+                        Enter the amount of your Activity.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -183,11 +198,11 @@ export default function Activity() {
                     <div>
                       <Select
                         onValueChange={onChange}
-                        value={value}
+                        value={value ? value.toString() : ""}
                         disabled={!form.watch("part_of_budget")}
                       >
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Part of Budget" />
+                          <SelectValue placeholder="Choose a budget" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
