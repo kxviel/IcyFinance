@@ -1,4 +1,10 @@
 import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import {
   Table,
   TableBody,
   TableCaption,
@@ -7,34 +13,79 @@ import {
   TableHeader,
   TableRow,
 } from "../../components/ui/table";
-import { useGetActivities } from "./api/GetActivities";
 
-const ActivityList = () => {
-  const { data: activityList } = useGetActivities();
+import { useGetActivities } from "./api/GetActivities";
+import { columns } from "./columns";
+
+interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+}
+
+export function DataTable<TData, TValue>({
+  columns,
+  data,
+}: DataTableProps<TData, TValue>) {
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   return (
     <Table>
       <TableCaption>A list of your recent activities.</TableCaption>
       <TableHeader className="bg-white">
-        <TableRow>
-          <TableHead>Activity Title</TableHead>
-          <TableHead>Amount</TableHead>
-          <TableHead>Part of Budget</TableHead>
-        </TableRow>
+        {table.getHeaderGroups().map((headerGroup) => (
+          <TableRow key={headerGroup.id}>
+            {headerGroup.headers.map((header) => {
+              return (
+                <TableHead key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                </TableHead>
+              );
+            })}
+          </TableRow>
+        ))}
       </TableHeader>
       <TableBody className="border-b border-slate-200">
-        {activityList &&
-          activityList.map((item) => (
-            <TableRow key={item.id}>
-              <TableCell className="font-medium">
-                {item.activity_title}
-              </TableCell>
-              <TableCell>${item.activity_amount}</TableCell>
-              <TableCell>{item.budget ? item.budget?.title : "-"}</TableCell>
+        {table.getRowModel().rows?.length ? (
+          table.getRowModel().rows.map((row) => (
+            <TableRow
+              key={row.id}
+              data-state={row.getIsSelected() && "selected"}
+            >
+              {row.getVisibleCells().map((cell) => (
+                <TableCell key={cell.id}>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </TableCell>
+              ))}
             </TableRow>
-          ))}
+          ))
+        ) : (
+          <TableRow>
+            <TableCell colSpan={columns.length} className="h-24 text-center">
+              No results.
+            </TableCell>
+          </TableRow>
+        )}
       </TableBody>
     </Table>
+  );
+}
+
+const ActivityList = () => {
+  const { data: activityList } = useGetActivities();
+
+  return (
+    <div className="container mx-auto py-10">
+      <DataTable columns={columns} data={activityList ? activityList : []} />
+    </div>
   );
 };
 
