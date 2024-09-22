@@ -18,11 +18,11 @@ export const Sidebar = () => {
             <span>Budgets</span>
           </Link>
           <Link
-            to="/activity"
+            to="/expense"
             className="flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
           >
             <ChartBarDecreasing size={24} />
-            <span>Activity</span>
+            <span>Expense</span>
           </Link>
         </nav>
         <div className="mt-auto flex flex-col items-start gap-2">

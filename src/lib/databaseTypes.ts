@@ -11,62 +11,56 @@ export type Database = {
     Tables: {
       budget: {
         Row: {
-          activity: number;
-          amount_available: number;
-          assigned_budget: number;
+          budget_amount: number;
+          budget_available: number;
+          budget_expenses: number;
+          budget_name: string;
           createdAt: string;
-          desc: string | null;
-          id: number;
-          title: string;
-          updatedAt: string;
+          id: string;
         };
         Insert: {
-          activity?: number;
-          amount_available?: number;
-          assigned_budget?: number;
+          budget_amount?: number;
+          budget_available?: number;
+          budget_expenses?: number;
+          budget_name?: string;
           createdAt?: string;
-          desc?: string | null;
-          id?: number;
-          title?: string;
-          updatedAt?: string;
+          id?: string;
         };
         Update: {
-          activity?: number;
-          amount_available?: number;
-          assigned_budget?: number;
+          budget_amount?: number;
+          budget_available?: number;
+          budget_expenses?: number;
+          budget_name?: string;
           createdAt?: string;
-          desc?: string | null;
-          id?: number;
-          title?: string;
-          updatedAt?: string;
+          id?: string;
         };
         Relationships: [];
       };
-      budget_activity: {
+      expenses: {
         Row: {
-          activity_amount: number;
-          activity_title: string;
-          budget_id: number | null;
+          budget_id: string | null;
           created_at: string;
-          id: number;
+          expense_amount: number;
+          expense_name: string;
+          id: string;
         };
         Insert: {
-          activity_amount?: number;
-          activity_title: string;
-          budget_id?: number | null;
+          budget_id?: string | null;
           created_at?: string;
-          id?: number;
+          expense_amount?: number;
+          expense_name?: string;
+          id?: string;
         };
         Update: {
-          activity_amount?: number;
-          activity_title?: string;
-          budget_id?: number | null;
+          budget_id?: string | null;
           created_at?: string;
-          id?: number;
+          expense_amount?: number;
+          expense_name?: string;
+          id?: string;
         };
         Relationships: [
           {
-            foreignKeyName: "budget_activity_budget_id_fkey";
+            foreignKeyName: "expenses_budget_id_fkey";
             columns: ["budget_id"];
             isOneToOne: false;
             referencedRelation: "budget";
@@ -79,11 +73,11 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      activity_is_part_of_budget: {
+      add_activity_with_budget: {
         Args: {
-          budget_id: number;
-          activity_title: string;
-          activity_amount: number;
+          expense_name: string;
+          expense_amount: number;
+          budget_id: string;
         };
         Returns: undefined;
       };

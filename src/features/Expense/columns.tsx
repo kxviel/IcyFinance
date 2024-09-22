@@ -2,19 +2,20 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "../../components/ui/button";
 import { Checkbox } from "../../components/ui/checkbox";
 
-export type Activity = {
-  id: number;
-  activity_title: string;
-  activity_amount: number;
+type GetExpenseColumn = {
+  id: string;
+  expense_name: string;
+  expense_amount: number;
+  budget_id: string | null;
   budget: {
-    id: number;
-    title: string;
+    id: string;
+    budget_name: string;
   } | null;
 };
 
-export const columns: ColumnDef<Activity>[] = [
+export const columns: ColumnDef<GetExpenseColumn>[] = [
   {
-    accessorKey: "activity_title",
+    accessorKey: "expense_title",
     header: ({ table }) => (
       <div className="flex items-center gap-2">
         <Checkbox
@@ -29,7 +30,7 @@ export const columns: ColumnDef<Activity>[] = [
       </div>
     ),
     cell: ({ row }) => {
-      const kev = row.getValue("activity_title") as string | null;
+      const kev = row.getValue("expense_title") as string | null;
 
       return (
         <div className="flex items-center gap-2">
@@ -44,19 +45,16 @@ export const columns: ColumnDef<Activity>[] = [
     },
   },
   {
-    accessorKey: "activity_amount",
+    accessorKey: "expense_amount",
     header: "Amount",
   },
   {
     accessorKey: "budget",
     header: "Part of Budget",
     cell: ({ row }) => {
-      const kev = row.getValue("budget") as {
-        id: number;
-        title: string;
-      } | null;
+      const kev = row.getValue("budget") as GetExpenseColumn["budget"] | null;
 
-      return <div className="">{kev ? kev.title : "-"}</div>;
+      return <div className="">{kev ? kev.budget_name : "-"}</div>;
     },
   },
 
@@ -68,7 +66,7 @@ export const columns: ColumnDef<Activity>[] = [
         <div className="flex items-center gap-2">
           <Button variant="outline">Edit</Button>
 
-          <Button variant="outline">Delete</Button>
+          <Button variant="destructive">Delete</Button>
         </div>
       );
     },

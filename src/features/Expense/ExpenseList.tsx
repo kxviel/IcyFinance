@@ -14,7 +14,7 @@ import {
   TableRow,
 } from "../../components/ui/table";
 
-import { useGetActivities } from "./api/GetActivities";
+import { useGetExpenses } from "./api/useGetExpenses";
 import { columns } from "./columns";
 
 interface DataTableProps<TData, TValue> {
@@ -79,14 +79,14 @@ export function DataTable<TData, TValue>({
   );
 }
 
-const ActivityList = () => {
-  const { data: activityList } = useGetActivities();
+const ExpenseList = () => {
+  const { data: expenseList } = useGetExpenses();
 
   return (
     <div className="container mx-auto py-10">
-      <DataTable columns={columns} data={activityList ? activityList : []} />
+      <DataTable columns={columns} data={expenseList ? expenseList : []} />
     </div>
   );
 };
 
-export default ActivityList;
+export default ExpenseList;

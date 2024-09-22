@@ -21,7 +21,8 @@ import {
   FormLabel,
   FormMessage,
 } from "../../components/ui/form";
-import { useAddActivity } from "./api/AddActivity";
+import { useAddExpenseWithBudget } from "./api/useAddExpenseWithBudget";
+import { useAddExpense } from "./api/useAddExpense";
 import { Input } from "../../components/ui/input";
 import { Checkbox } from "../../components/ui/checkbox";
 import {
@@ -33,24 +34,25 @@ import {
   SelectValue,
 } from "../../components/ui/select";
 import { useGetBudgets } from "../Budget/api/GetBudgets";
+import { Database } from "../../lib/databaseTypes";
 
 const formSchema = z
   .object({
-    activity_title: z.string().min(2, {
+    budget_id: z.string().optional(),
+    expense_name: z.string().min(2, {
       message: "title must be at least 2 characters.",
     }),
-    activity_amount: z
+    expense_amount: z
       .number({
         invalid_type_error: "budget must be a number.",
       })
       .min(0, {
-        message: "budget must be greater than 0.",
+        message: "nah! not gonna let u do that :)",
       })
       .max(1000000, {
-        message: "budget must be less than 1,000,000.",
+        message: "lol really dude?",
       }),
     part_of_budget: z.boolean(),
-    budget_id: z.string().optional(),
   })
   .refine(
     (data) => {
@@ -60,39 +62,54 @@ const formSchema = z
       return true;
     },
     {
-      message: "budget_id is required when part_of_budget is true",
+      message: "Choose a Budget to link this expense with.",
       path: ["budget_id"],
     },
   );
 
 export type Activity = z.infer<typeof formSchema>;
 
-const AddActivity = () => {
+const AddExpense = () => {
   const { data: budgetList } = useGetBudgets();
 
-  const addActivity = useAddActivity();
+  const addExpense = useAddExpense();
+  const addExpenseWithBudget = useAddExpenseWithBudget();
 
   // 1. Define your form.
   const form = useForm<Activity>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      activity_title: "",
-      activity_amount: 0,
+      expense_name: "",
+      expense_amount: 0,
       part_of_budget: true,
     },
   });
 
-  // 2. Define a submit handler.
-  function onSubmit({ part_of_budget, ...values }: Activity) {
-    const body = {
-      ...values,
-      budget_id: part_of_budget ? values.budget_id : null,
-    };
+  // 2. Define a submit handler
+  function onSubmit(values: Activity) {
+    if (values?.budget_id) {
+      const body: Database["public"]["Functions"]["add_activity_with_budget"]["Args"] =
+        {
+          budget_id: values.budget_id,
+          expense_amount: values.expense_amount,
+          expense_name: values.expense_name,
+        };
 
-    addActivity.mutate({
-      body,
-    });
+      addExpenseWithBudget.mutate({
+        body,
+      });
+    } else {
+      const body: Database["public"]["Tables"]["expenses"]["Insert"] = {
+        budget_id: null,
+        expense_amount: values.expense_amount,
+        expense_name: values.expense_name,
+      };
+      addExpense.mutate({
+        body,
+      });
+    }
   }
+
   return (
     <Dialog>
       <DialogTrigger>
@@ -109,7 +126,7 @@ const AddActivity = () => {
           <form className="space-y-4">
             <FormField
               control={form.control}
-              name="activity_title"
+              name="expense_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Activity Title</FormLabel>
@@ -130,7 +147,7 @@ const AddActivity = () => {
 
             <FormField
               control={form.control}
-              name="activity_amount"
+              name="expense_amount"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Activity Amount</FormLabel>
@@ -178,7 +195,7 @@ const AddActivity = () => {
                 <div>
                   <Select
                     onValueChange={onChange}
-                    value={value ? value.toString() : ""}
+                    value={value}
                     disabled={!form.watch("part_of_budget")}
                   >
                     <SelectTrigger className="w-full">
@@ -192,7 +209,7 @@ const AddActivity = () => {
                               key={option.id}
                               value={option.id.toString()}
                             >
-                              {option.title}
+                              {option.budget_name}
                             </SelectItem>
                           ))}
                       </SelectGroup>
@@ -228,4 +245,4 @@ const AddActivity = () => {
   );
 };
 
-export default AddActivity;
+export default AddExpense;
