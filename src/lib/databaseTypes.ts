@@ -73,7 +73,7 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      add_activity_with_budget: {
+      add_expense_and_update_budget: {
         Args: {
           expense_name: string;
           expense_amount: number;

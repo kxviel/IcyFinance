@@ -11,6 +11,5 @@ export const useGetBudgets = () => {
   return useQuery({
     queryKey: ["GetBudgets"],
     queryFn: () => getBudgetAPI(),
-    // select: ({ data }) => data.data,
   });
 };

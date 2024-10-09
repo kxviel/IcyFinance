@@ -1,9 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
 import { supabase } from "../../../lib/supabase";
 import { queryClient } from "../../../main";
+import { Database } from "../../../lib/databaseTypes";
 
 type Props = {
-  body: any;
+  body: Database["public"]["Tables"]["budget"]["Insert"];
 };
 
 const addBudgetAPI = async ({ body }: Props) => {
@@ -17,8 +18,7 @@ const addBudgetAPI = async ({ body }: Props) => {
 export const useAddBudget = () => {
   return useMutation({
     mutationFn: addBudgetAPI,
-    onSuccess: (data) => {
-      console.log(data);
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["GetBudgets"] });
     },
     onError: (err) => {

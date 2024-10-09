@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "../../components/ui/table";
-import { useGetBudgets } from "./api/GetBudgets";
+import { useGetBudgets } from "./api/useGetBudgets";
 
 const BudgetList = () => {
   const { data: budgetList } = useGetBudgets();
@@ -27,11 +27,11 @@ const BudgetList = () => {
         {budgetList &&
           budgetList.map((item) => (
             <TableRow key={item.id}>
-              <TableCell className="font-medium">{item.title}</TableCell>
-              <TableCell>${item.assigned_budget}</TableCell>
-              <TableCell>${item.activity}</TableCell>
+              <TableCell className="font-medium">{item.budget_name}</TableCell>
+              <TableCell>${item.budget_amount}</TableCell>
+              <TableCell>${item.budget_expenses}</TableCell>
               <TableCell className="text-right">
-                ${item.amount_available}
+                ${item.budget_available}
               </TableCell>
             </TableRow>
           ))}

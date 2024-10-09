@@ -7,7 +7,7 @@ export const Sidebar = () => {
       <div className="flex flex-col items-center border-r border-border bg-background px-4 py-6">
         <Link to="/" className="mb-8">
           <Omega size={42} />
-          <span className="sr-only">Acme Inc</span>
+          <span className="sr-only">Okane Inc</span>
         </Link>
         <nav className="flex flex-col items-start gap-4">
           <Link

@@ -33,8 +33,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../components/ui/select";
-import { useGetBudgets } from "../Budget/api/GetBudgets";
+import { useGetBudgets } from "../Budget/api/useGetBudgets";
 import { Database } from "../../lib/databaseTypes";
+import { useState } from "react";
 
 const formSchema = z
   .object({
@@ -75,6 +76,8 @@ const AddExpense = () => {
   const addExpense = useAddExpense();
   const addExpenseWithBudget = useAddExpenseWithBudget();
 
+  const [open, setOpen] = useState(false);
+
   // 1. Define your form.
   const form = useForm<Activity>({
     resolver: zodResolver(formSchema),
@@ -88,7 +91,7 @@ const AddExpense = () => {
   // 2. Define a submit handler
   function onSubmit(values: Activity) {
     if (values?.budget_id) {
-      const body: Database["public"]["Functions"]["add_activity_with_budget"]["Args"] =
+      const body: Database["public"]["Functions"]["add_expense_and_update_budget"]["Args"] =
         {
           budget_id: values.budget_id,
           expense_amount: values.expense_amount,
@@ -104,14 +107,25 @@ const AddExpense = () => {
         expense_amount: values.expense_amount,
         expense_name: values.expense_name,
       };
-      addExpense.mutate({
-        body,
-      });
+      addExpense.mutate(
+        {
+          body,
+        },
+        {
+          onSuccess: () => {
+            form.reset();
+            setOpen(false);
+          },
+          onError: (err) => {
+            console.log(err);
+          },
+        },
+      );
     }
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
         <Button>Add Expense</Button>
       </DialogTrigger>

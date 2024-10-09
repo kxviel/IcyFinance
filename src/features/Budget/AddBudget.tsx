@@ -22,13 +22,14 @@ import {
   FormMessage,
 } from "../../components/ui/form";
 import { Input } from "../../components/ui/input";
-import { useAddBudget } from "./api/AddBudget";
+import { useAddBudget } from "./api/useAddBudget";
+import { useState } from "react";
 
 const formSchema = z.object({
-  title: z.string().min(2, {
+  budget_name: z.string().min(2, {
     message: "title must be at least 2 characters.",
   }),
-  assigned_budget: z
+  budget_amount: z
     .number({
       invalid_type_error: "budget must be a number.",
     })
@@ -43,21 +44,35 @@ const formSchema = z.object({
 const AddBudget = () => {
   const addBudget = useAddBudget();
 
+  const [open, setOpen] = useState(false);
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      assigned_budget: 0,
+      budget_name: "",
+      budget_amount: 0,
     },
   });
 
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
-    addBudget.mutate({ body: values });
+    addBudget.mutate(
+      { body: values },
+      {
+        onSuccess: () => {
+          form.reset();
+          setOpen(false);
+        },
+        onError: (err) => {
+          console.log(err);
+        },
+      },
+    );
   }
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
         <Button>Create Budget</Button>
       </DialogTrigger>
@@ -72,7 +87,7 @@ const AddBudget = () => {
           <form className="space-y-8">
             <FormField
               control={form.control}
-              name="title"
+              name="budget_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Budget Title</FormLabel>
@@ -93,7 +108,7 @@ const AddBudget = () => {
 
             <FormField
               control={form.control}
-              name="assigned_budget"
+              name="budget_amount"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Budget Amount</FormLabel>
