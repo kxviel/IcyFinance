@@ -9,7 +9,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "../../components/ui/dialog";
 import { Button } from "../../components/ui/button";
 import {
@@ -23,7 +22,8 @@ import {
 } from "../../components/ui/form";
 import { Input } from "../../components/ui/input";
 import { useAddBudget } from "./api/useAddBudget";
-import { useState } from "react";
+// import { useState } from "react";
+import { useDialogStore } from "../../lib/DialogStore";
 
 const formSchema = z.object({
   budget_name: z.string().min(2, {
@@ -43,8 +43,9 @@ const formSchema = z.object({
 
 const AddBudget = () => {
   const addBudget = useAddBudget();
+  const { showDialog, setDialog } = useDialogStore();
 
-  const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState(false);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -57,12 +58,18 @@ const AddBudget = () => {
 
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
+    const body = {
+      ...values,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
     addBudget.mutate(
-      { body: values },
+      { body },
       {
         onSuccess: () => {
           form.reset();
-          setOpen(false);
+          setDialog(false);
         },
         onError: (err) => {
           console.log(err);
@@ -72,10 +79,8 @@ const AddBudget = () => {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
-        <Button>Create Budget</Button>
-      </DialogTrigger>
+    <Dialog open={showDialog} onOpenChange={setDialog}>
+      {/* <Button onClick={() => setOpen(true)}>Create Budget</Button> */}
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Add Expense</DialogTitle>
