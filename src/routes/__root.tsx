@@ -12,7 +12,7 @@ function RootComponent() {
     <>
       <div className="flex h-screen w-full">
         <Sidebar />
-        <div className="w-full bg-[#f9f9f9] p-8">
+        <div className="w-full bg-background p-8">
           <Outlet />
         </div>
       </div>

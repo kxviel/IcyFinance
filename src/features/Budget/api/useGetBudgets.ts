@@ -11,18 +11,17 @@ export type BudgetResponse = {
   updated_at: string;
 }[];
 
-export const getBudgetAPI = async (): Promise<BudgetResponse> => {
-  const { data, error } = await supabase
-    .from("budget")
-    .select()
-    .order("budget_name");
+export const getBudgetAPI = async (
+  sortyBy: string,
+): Promise<BudgetResponse> => {
+  const { data, error } = await supabase.from("budget").select().order(sortyBy);
   if (error) throw new Error(error.message);
   return data;
 };
 
-export const useGetBudgets = () => {
+export const useGetBudgets = (sortyBy: string) => {
   return useQuery({
-    queryKey: ["GetBudgets"],
-    queryFn: getBudgetAPI,
+    queryKey: ["GetBudgets", sortyBy],
+    queryFn: () => getBudgetAPI(sortyBy),
   });
 };

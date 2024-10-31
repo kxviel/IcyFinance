@@ -23,7 +23,6 @@ import {
 import { budgetColumns } from "./columns";
 import { useState } from "react";
 import { Button } from "../../components/ui/button";
-import { X as Close } from "lucide-react";
 import { BudgetResponse, useGetBudgets } from "./api/useGetBudgets";
 import { useDialogStore } from "../../lib/DialogStore";
 import { Input } from "../../components/ui/input";
@@ -47,7 +46,7 @@ export function DataTable<TData, TValue>({
   return (
     <Table>
       <TableCaption>A list of your recent activities.</TableCaption>
-      <TableHeader className="bg-white">
+      <TableHeader className="bg-background">
         {table.getHeaderGroups().map((headerGroup) => (
           <TableRow key={headerGroup.id}>
             {headerGroup.headers.map((header) => {
@@ -65,7 +64,7 @@ export function DataTable<TData, TValue>({
           </TableRow>
         ))}
       </TableHeader>
-      <TableBody className="border-b border-slate-200">
+      <TableBody>
         {table.getRowModel().rows?.length ? (
           table.getRowModel().rows.map((row) => (
             <TableRow
@@ -91,55 +90,54 @@ export function DataTable<TData, TValue>({
   );
 }
 
-const BudgetList = ({ list }: { list: BudgetResponse }) => {
-  const [modified, setModified] = useState("");
+const BudgetList = ({
+  list,
+  sortBy,
+  setSortBy,
+}: {
+  list: BudgetResponse;
+  sortBy: string;
+  setSortBy: React.Dispatch<React.SetStateAction<string>>;
+}) => {
+  const sortOptions = [
+    {
+      name: "Name",
+      value: "budget_name",
+    },
+    {
+      name: "Amount",
+      value: "budget_amount",
+    },
+    {
+      name: "Created At",
+      value: "created_at",
+    },
+    {
+      name: "Updated At",
+      value: "updated_at",
+    },
+  ];
 
   return (
     <div className="container mx-auto py-10">
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-5">
-          <div className="flex items-center gap-1">
-            <Select
-              onValueChange={(v) => {
-                setModified(v);
-              }}
-              defaultValue={""}
-              value={modified}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Modified" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="7">7 Days</SelectItem>
-                <SelectItem value="14">14 Days</SelectItem>
-                <SelectItem value="30">30 Days</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {modified && (
-              <Button
-                onClick={() => setModified("")}
-                variant={"outline"}
-                className="bg-[#f9f9f9]"
-              >
-                <Close className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-
           <Select
             onValueChange={(v) => {
-              setModified(v);
+              setSortBy(v);
             }}
-            defaultValue={modified}
+            defaultValue={""}
+            value={sortBy}
           >
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Modified" />
+              <SelectValue placeholder="Sort By" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="7">7 Days</SelectItem>
-              <SelectItem value="14">14 Days</SelectItem>
-              <SelectItem value="30">30 Days</SelectItem>
+              {sortOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -150,7 +148,9 @@ const BudgetList = ({ list }: { list: BudgetResponse }) => {
 };
 
 function Budget() {
-  const { data: budgetList } = useGetBudgets();
+  const [sortBy, setSortBy] = useState("budget_name");
+
+  const { data: budgetList } = useGetBudgets(sortBy);
   const { setDialog } = useDialogStore();
 
   return (
@@ -162,7 +162,11 @@ function Budget() {
         <Button onClick={() => setDialog(true)}>Create Budget</Button>
       </div>
 
-      <BudgetList list={budgetList ? budgetList : []} />
+      <BudgetList
+        list={budgetList ? budgetList : []}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+      />
       <AddBudget />
     </main>
   );
