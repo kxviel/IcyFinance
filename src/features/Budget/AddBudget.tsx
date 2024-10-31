@@ -22,8 +22,10 @@ import {
 } from "../../components/ui/form";
 import { Input } from "../../components/ui/input";
 import { useAddBudget } from "./api/useAddBudget";
-// import { useState } from "react";
+import dayjs from "dayjs";
 import { useDialogStore } from "../../lib/DialogStore";
+import { useEffect } from "react";
+import { useUpdateBudget } from "./api/useUpdateBudget";
 
 const formSchema = z.object({
   budget_name: z.string().min(2, {
@@ -43,11 +45,9 @@ const formSchema = z.object({
 
 const AddBudget = () => {
   const addBudget = useAddBudget();
-  const { showDialog, setDialog } = useDialogStore();
+  const updateBudget = useUpdateBudget();
+  const { showDialog, dialogProps, setDialog } = useDialogStore();
 
-  // const [open, setOpen] = useState(false);
-
-  // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -56,26 +56,52 @@ const AddBudget = () => {
     },
   });
 
-  // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    const body = {
-      ...values,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
+  useEffect(() => {
+    if (dialogProps) form.reset(dialogProps);
+  }, [dialogProps, form]);
 
-    addBudget.mutate(
-      { body },
-      {
-        onSuccess: () => {
-          form.reset();
-          setDialog(false);
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    if (dialogProps) {
+      const timestamp = dayjs().toISOString();
+      const body = {
+        ...values,
+        id: dialogProps.id,
+        updated_at: timestamp,
+      };
+
+      updateBudget.mutate(
+        { body },
+        {
+          onSuccess: () => {
+            form.reset();
+            setDialog(false);
+          },
+          onError: (err) => {
+            console.log(err);
+          },
         },
-        onError: (err) => {
-          console.log(err);
+      );
+    } else {
+      const timestamp = dayjs().toISOString();
+      const body = {
+        ...values,
+        created_at: timestamp,
+        updated_at: timestamp,
+      };
+
+      addBudget.mutate(
+        { body },
+        {
+          onSuccess: () => {
+            form.reset();
+            setDialog(false);
+          },
+          onError: (err) => {
+            console.log(err);
+          },
         },
-      },
-    );
+      );
+    }
   }
 
   return (

@@ -12,7 +12,10 @@ export type BudgetResponse = {
 }[];
 
 export const getBudgetAPI = async (): Promise<BudgetResponse> => {
-  const { data, error } = await supabase.from("budget").select();
+  const { data, error } = await supabase
+    .from("budget")
+    .select()
+    .order("budget_name");
   if (error) throw new Error(error.message);
   return data;
 };

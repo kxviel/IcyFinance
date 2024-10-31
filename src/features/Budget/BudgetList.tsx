@@ -20,7 +20,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { columns } from "./columns";
+import { budgetColumns } from "./columns";
 import { useState } from "react";
 import { Button } from "../../components/ui/button";
 import { X as Close } from "lucide-react";
@@ -143,7 +143,7 @@ const BudgetList = ({ list }: { list: BudgetResponse }) => {
             </SelectContent>
           </Select>
         </div>
-        <DataTable columns={columns} data={list ? list : []} />
+        <DataTable columns={budgetColumns} data={list ? list : []} />
       </div>
     </div>
   );

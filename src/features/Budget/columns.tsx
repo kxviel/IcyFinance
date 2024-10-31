@@ -1,9 +1,8 @@
 import { createColumnHelper } from "@tanstack/react-table";
-import { formatRelative, subDays } from "date-fns";
-import { MoreVerticalIcon } from "lucide-react";
-import { Button } from "../../components/ui/button";
+import dayjs from "dayjs";
+import BudgetMenu from "./BudgetMenu";
 
-type GetBudgetColumn = {
+export type GetBudgetColumn = {
   budget_amount: number;
   budget_available: number;
   budget_expenses: number;
@@ -15,7 +14,7 @@ type GetBudgetColumn = {
 
 const columnHelper = createColumnHelper<GetBudgetColumn>();
 
-export const columns = [
+export const budgetColumns = [
   columnHelper.display({
     id: "budget_name",
     header: "Name",
@@ -57,17 +56,13 @@ export const columns = [
     header: "Last Modified",
     cell: (props) => (
       <div className="flex items-center gap-2">
-        {formatRelative(subDays(props.row.original.created_at, 3), new Date())}
+        {dayjs(props.row.original.updated_at).format("DD MMM YYYY HH:mm a")}
       </div>
     ),
   }),
   columnHelper.display({
     id: "actions",
     header: "Actions",
-    cell: () => (
-      <Button variant="ghost">
-        <MoreVerticalIcon />
-      </Button>
-    ),
+    cell: (props) => <BudgetMenu props={props.row.original} />,
   }),
 ];
