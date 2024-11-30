@@ -51,14 +51,19 @@ export const budgetColumns = [
       </div>
     ),
   }),
-  columnHelper.display({
-    id: "updatedAt",
+  columnHelper.accessor("updated_at", {
+    id: "updated_at",
     header: "Last Modified",
     cell: (props) => (
       <div className="flex items-center gap-2">
         {dayjs(props.row.original.updated_at).format("DD MMM YYYY HH:mm a")}
       </div>
     ),
+    // enableSorting: true,
+    sortingFn: (rowA, rowB, columnId) => {
+      console.log(rowA, rowB, columnId);
+      return 0;
+    },
   }),
   columnHelper.display({
     id: "actions",

@@ -33,14 +33,27 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
 }
 
+type ColumnSort = {
+  id: string;
+  desc: boolean;
+};
+type SortingState = ColumnSort[];
+
 export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = useState<SortingState>([]);
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    // manualSorting: true, //use pre-sorted row model instead of sorted row model
+    // state: {
+    //   sorting,
+    // },
+    // onSortingChange: setSorting,
   });
 
   return (
@@ -148,7 +161,7 @@ const BudgetList = ({
 };
 
 function Budget() {
-  const [sortBy, setSortBy] = useState("budget_name");
+  const [sortBy, setSortBy] = useState("created_at");
 
   const { data: budgetList } = useGetBudgets(sortBy);
   const { setDialog } = useDialogStore();
