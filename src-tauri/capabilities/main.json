@@ -1,0 +1,16 @@
+{
+	"$schema": "../gen/schemas/desktop-schema.json",
+	"identifier": "main",
+	"description": "The local IcyFinance window can use embedded SQLite storage and export through a native save dialog.",
+	"windows": ["main"],
+	"local": true,
+	"permissions": [
+		"core:event:allow-listen",
+		"core:event:allow-unlisten",
+		"core:window:allow-destroy",
+		"allow-load-budget",
+		"allow-save-budget",
+		"allow-database-status",
+		"allow-export-file"
+	]
+}

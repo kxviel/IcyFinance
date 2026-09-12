@@ -1,0 +1,28 @@
+[package]
+name = "icyfinance"
+version = "0.1.0"
+description = "A considered space for your money"
+authors = ["kxviel"]
+edition = "2021"
+rust-version = "1.85"
+
+[lib]
+name = "icyfinance_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.6", features = [] }
+
+[dependencies]
+tauri = { version = "2.9", features = [] }
+tauri-plugin-dialog = "2.7"
+tauri-plugin-single-instance = "2"
+serde_json = "1"
+tempfile = "3"
+rusqlite = { version = "0.40", features = ["bundled"] }
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true

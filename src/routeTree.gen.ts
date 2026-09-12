@@ -8,32 +8,131 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as AccountsRouteImport } from './routes/accounts'
+import { Route as BudgetRouteImport } from './routes/budget'
+import { Route as OverviewRouteImport } from './routes/overview'
+import { Route as ReportsRouteImport } from './routes/reports'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as TargetsRouteImport } from './routes/targets'
+import { Route as TransactionsRouteImport } from './routes/transactions'
 
-// Import Routes
-
-import { Route as rootRoute } from './routes/__root'
-
-// Create Virtual Routes
-
-const ExpenseLazyImport = createFileRoute('/expense')()
-const IndexLazyImport = createFileRoute('/')()
-
-// Create/Update Routes
-
-const ExpenseLazyRoute = ExpenseLazyImport.update({
-  id: '/expense',
-  path: '/expense',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/expense.lazy').then((d) => d.Route))
-
-const IndexLazyRoute = IndexLazyImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountsRoute = AccountsRouteImport.update({
+  id: '/accounts',
+  path: '/accounts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BudgetRoute = BudgetRouteImport.update({
+  id: '/budget',
+  path: '/budget',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OverviewRoute = OverviewRouteImport.update({
+  id: '/overview',
+  path: '/overview',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportsRoute = ReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TargetsRoute = TargetsRouteImport.update({
+  id: '/targets',
+  path: '/targets',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TransactionsRoute = TransactionsRouteImport.update({
+  id: '/transactions',
+  path: '/transactions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
-// Populate the FileRoutesByPath interface
+export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
+  '/accounts': typeof AccountsRoute
+  '/budget': typeof BudgetRoute
+  '/overview': typeof OverviewRoute
+  '/reports': typeof ReportsRoute
+  '/settings': typeof SettingsRoute
+  '/targets': typeof TargetsRoute
+  '/transactions': typeof TransactionsRoute
+}
+export interface FileRoutesByTo {
+  '/': typeof IndexRoute
+  '/accounts': typeof AccountsRoute
+  '/budget': typeof BudgetRoute
+  '/overview': typeof OverviewRoute
+  '/reports': typeof ReportsRoute
+  '/settings': typeof SettingsRoute
+  '/targets': typeof TargetsRoute
+  '/transactions': typeof TransactionsRoute
+}
+export interface FileRoutesById {
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/accounts': typeof AccountsRoute
+  '/budget': typeof BudgetRoute
+  '/overview': typeof OverviewRoute
+  '/reports': typeof ReportsRoute
+  '/settings': typeof SettingsRoute
+  '/targets': typeof TargetsRoute
+  '/transactions': typeof TransactionsRoute
+}
+export interface FileRouteTypes {
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths:
+    | '/'
+    | '/accounts'
+    | '/budget'
+    | '/overview'
+    | '/reports'
+    | '/settings'
+    | '/targets'
+    | '/transactions'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/accounts'
+    | '/budget'
+    | '/overview'
+    | '/reports'
+    | '/settings'
+    | '/targets'
+    | '/transactions'
+  id:
+    | '__root__'
+    | '/'
+    | '/accounts'
+    | '/budget'
+    | '/overview'
+    | '/reports'
+    | '/settings'
+    | '/targets'
+    | '/transactions'
+  fileRoutesById: FileRoutesById
+}
+export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
+  AccountsRoute: typeof AccountsRoute
+  BudgetRoute: typeof BudgetRoute
+  OverviewRoute: typeof OverviewRoute
+  ReportsRoute: typeof ReportsRoute
+  SettingsRoute: typeof SettingsRoute
+  TargetsRoute: typeof TargetsRoute
+  TransactionsRoute: typeof TransactionsRoute
+}
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
@@ -41,76 +140,71 @@ declare module '@tanstack/react-router' {
       id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexLazyImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/expense': {
-      id: '/expense'
-      path: '/expense'
-      fullPath: '/expense'
-      preLoaderRoute: typeof ExpenseLazyImport
-      parentRoute: typeof rootRoute
+    '/accounts': {
+      id: '/accounts'
+      path: '/accounts'
+      fullPath: '/accounts'
+      preLoaderRoute: typeof AccountsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/budget': {
+      id: '/budget'
+      path: '/budget'
+      fullPath: '/budget'
+      preLoaderRoute: typeof BudgetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/overview': {
+      id: '/overview'
+      path: '/overview'
+      fullPath: '/overview'
+      preLoaderRoute: typeof OverviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reports': {
+      id: '/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof ReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/targets': {
+      id: '/targets'
+      path: '/targets'
+      fullPath: '/targets'
+      preLoaderRoute: typeof TargetsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/transactions': {
+      id: '/transactions'
+      path: '/transactions'
+      fullPath: '/transactions'
+      preLoaderRoute: typeof TransactionsRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
-}
-
-// Create and export the route tree
-
-export interface FileRoutesByFullPath {
-  '/': typeof IndexLazyRoute
-  '/expense': typeof ExpenseLazyRoute
-}
-
-export interface FileRoutesByTo {
-  '/': typeof IndexLazyRoute
-  '/expense': typeof ExpenseLazyRoute
-}
-
-export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/': typeof IndexLazyRoute
-  '/expense': typeof ExpenseLazyRoute
-}
-
-export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/expense'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/expense'
-  id: '__root__' | '/' | '/expense'
-  fileRoutesById: FileRoutesById
-}
-
-export interface RootRouteChildren {
-  IndexLazyRoute: typeof IndexLazyRoute
-  ExpenseLazyRoute: typeof ExpenseLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexLazyRoute: IndexLazyRoute,
-  ExpenseLazyRoute: ExpenseLazyRoute,
+  IndexRoute: IndexRoute,
+  AccountsRoute: AccountsRoute,
+  BudgetRoute: BudgetRoute,
+  OverviewRoute: OverviewRoute,
+  ReportsRoute: ReportsRoute,
+  SettingsRoute: SettingsRoute,
+  TargetsRoute: TargetsRoute,
+  TransactionsRoute: TransactionsRoute,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "__root.tsx",
-      "children": [
-        "/",
-        "/expense"
-      ]
-    },
-    "/": {
-      "filePath": "index.lazy.tsx"
-    },
-    "/expense": {
-      "filePath": "expense.lazy.tsx"
-    }
-  }
-}
-ROUTE_MANIFEST_END */

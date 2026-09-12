@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <title>IcyFinance</title>
+  <rect width="128" height="128" rx="28" fill="#111110"/>
+  <g stroke="#d6d4cd" stroke-width="2">
+    <path d="M64 23 100 44v40l-36 21L28 84V44L64 23Z"/>
+    <path d="m28 44 36 21 36-21M64 65v40"/>
+    <path d="m35 40 36 21v40M42 36l36 21v40M49 32l36 21v40M56 28l36 21v40"/>
+    <path d="m28 52 36 21 36-21M28 60l36 21 36-21M28 68l36 21 36-21M28 76l36 21 36-21"/>
+  </g>
+</svg>

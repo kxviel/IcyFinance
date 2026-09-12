@@ -1,34 +1,26 @@
-import { StrictMode } from "react";
+import React from "react";
 import ReactDOM from "react-dom/client";
-import { RouterProvider, createRouter } from "@tanstack/react-router";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import "./index.css";
-
-// Import the generated route tree
+import "@fontsource-variable/inter";
+import "@/globals.css";
+import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 
-// Create a new router instance
-const router = createRouter({ routeTree });
+export const router = createRouter({
+	routeTree,
+	scrollRestoration: true,
+	defaultPreload: "intent",
+});
 
-// Create a new QueryClient
-export const queryClient = new QueryClient();
-
-// Register the router instance for type safety
 declare module "@tanstack/react-router" {
-  interface Register {
-    router: typeof router;
-  }
+	interface Register {
+		router: typeof router;
+	}
 }
 
-// Render the app
-const rootElement = document.getElementById("root")!;
-if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-      </QueryClientProvider>
-    </StrictMode>,
-  );
-}
+const root = document.getElementById("root");
+if (!root) throw new Error("App root was not found.");
+ReactDOM.createRoot(root).render(
+	<React.StrictMode>
+		<RouterProvider router={router} />
+	</React.StrictMode>,
+);
