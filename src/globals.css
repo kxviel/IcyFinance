@@ -1,0 +1,231 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@custom-variant dark (&:is([data-theme="dark"] *));
+@theme inline {
+	--font-sans: "Inter Variable", Inter, sans-serif;
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-muted: var(--surface);
+	--color-muted-foreground: var(--muted);
+	--color-border: var(--border);
+	--color-input: var(--border);
+	--color-ring: var(--focus);
+	--color-primary: var(--foreground);
+	--color-primary-foreground: var(--background);
+	--color-secondary: var(--surface);
+	--color-secondary-foreground: var(--foreground);
+	--color-accent: var(--hover);
+	--color-accent-foreground: var(--foreground);
+	--color-card: var(--surface);
+	--color-card-foreground: var(--foreground);
+	--color-popover: var(--background);
+	--color-popover-foreground: var(--foreground);
+	--color-destructive: var(--negative);
+	--color-subtle: var(--subtle);
+	--radius-sm: 0.125rem;
+	--radius-md: 0.25rem;
+	--radius-lg: 0.5rem;
+	--radius-xl: 0.75rem;
+	--radius-2xl: 1rem;
+	--radius-3xl: 1.25rem;
+	--radius-4xl: 1.5rem;
+}
+@keyframes arrive {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+@keyframes dialog-in {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+@keyframes dialog-fade-in {
+	from {
+		opacity: 0;
+	}
+}
+@keyframes loading {
+	to {
+		background-position: -200% 0;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		/* biome-ignore lint/complexity/noImportantStyles: Respect reduced motion even when a component specifies its own animation. */
+		animation-duration: 0.001ms !important;
+		/* biome-ignore lint/complexity/noImportantStyles: Respect reduced motion across component transitions. */
+		transition-duration: 0.001ms !important;
+		/* biome-ignore lint/complexity/noImportantStyles: Accessibility preference overrides smooth scrolling. */
+		scroll-behavior: auto !important;
+	}
+}
+@media print {
+	:root {
+		color-scheme: light;
+		--background: #fff;
+		--foreground: #111;
+		--muted: #555;
+		--border: #ddd;
+		--surface: #f6f6f6;
+	}
+}
+@layer base {
+	:root {
+		--radius: 0.5rem;
+		--popover: var(--background);
+		--popover-foreground: var(--foreground);
+		--secondary: var(--surface);
+		font-family:
+			"Inter Variable", Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+		color-scheme: dark;
+		--background: #111210;
+		--foreground: #d9d9d2;
+		--muted: #90918a;
+		--subtle: #73756d;
+		--border: #2c2e28;
+		--surface: #171814;
+		--hover: #22241e;
+		--negative: #dda18e;
+		--focus: #d9d9d2;
+		font-synthesis: none;
+		text-rendering: optimizeLegibility;
+		-webkit-font-smoothing: antialiased;
+	}
+	:root[data-theme="light"] {
+		color-scheme: light;
+		--background: #f3f2ed;
+		--foreground: #262720;
+		--muted: #696b60;
+		--subtle: #787b70;
+		--border: #d7d8ce;
+		--surface: #eaeae2;
+		--hover: #e0e1d6;
+		--negative: #a3422d;
+		--focus: #262720;
+	}
+	* {
+		box-sizing: border-box;
+	}
+	html {
+		min-width: 360px;
+		background: var(--background);
+		scrollbar-color: var(--border) var(--background);
+	}
+	body {
+		margin: 0;
+		background: var(--background);
+		color: var(--foreground);
+		font-size: 14px;
+		line-height: 1.55;
+	}
+	button,
+	input,
+	textarea,
+	select {
+		font: inherit;
+	}
+	button,
+	a,
+	input,
+	select,
+	textarea {
+		-webkit-tap-highlight-color: transparent;
+	}
+	button {
+		cursor: pointer;
+		color: inherit;
+		background: none;
+		border: 0;
+	}
+	button:disabled {
+		opacity: 0.38;
+		cursor: not-allowed;
+	}
+	button,
+	a,
+	input,
+	textarea,
+	select,
+	summary {
+		outline-offset: 5px;
+	}
+	:focus-visible {
+		outline: 1px solid var(--focus);
+	}
+	a {
+		color: inherit;
+		text-underline-offset: 4px;
+	}
+	button,
+	a {
+		touch-action: manipulation;
+	}
+	::selection {
+		color: var(--background);
+		background: var(--foreground);
+	}
+	h1,
+	h2,
+	h3,
+	p {
+		margin: 0;
+	}
+	h1,
+	h2,
+	h3 {
+		line-height: 1.12;
+		font-weight: 550;
+	}
+	h1 {
+		letter-spacing: -0.065em;
+	}
+	h2 {
+		font-size: 26px;
+		letter-spacing: -0.045em;
+	}
+	h3 {
+		font-size: 19px;
+		letter-spacing: -0.035em;
+	}
+	strong {
+		font-weight: 550;
+	}
+	svg {
+		flex-shrink: 0;
+	}
+	fieldset {
+		display: grid;
+		gap: 22px;
+		padding: 0;
+		margin: 0;
+		border: 0;
+		min-width: 0;
+	}
+	fieldset:disabled {
+		opacity: 0.6;
+	}
+	:root[data-theme="light"] .hero-art > .shape {
+		color: var(--foreground);
+	}
+	.symbol-1 {
+		border-radius: 50%;
+	}
+	.symbol-2 {
+		transform: rotate(45deg) scale(0.8);
+	}
+	.symbol-3 {
+		border-radius: 50% 50% 0 0;
+	}
+}
