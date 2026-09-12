@@ -1,8 +1,8 @@
 import { createRootRoute, Link } from "@tanstack/react-router";
-import AppLayout from "@/components/AppLayout";
-import WorkspaceError from "@/components/WorkspaceError";
-import { BudgetProvider } from "@/modules/Workspace/BudgetProvider";
-import WorkspaceProvider from "@/modules/Workspace/WorkspaceProvider";
+import AppLayout from "@/components/app-layout";
+import { BudgetProvider } from "@/components/budget-provider";
+import WorkspaceError from "@/components/workspace-error";
+import WorkspaceProvider from "@/components/workspace-provider";
 
 export const Route = createRootRoute({
 	component: RootComponent,

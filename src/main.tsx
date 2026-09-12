@@ -1,8 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "@fontsource-variable/inter";
 import "@/globals.css";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
+import { ThemeProvider } from "@/components/theme-provider";
 import { routeTree } from "./routeTree.gen";
 
 export const router = createRouter({
@@ -21,6 +21,8 @@ const root = document.getElementById("root");
 if (!root) throw new Error("App root was not found.");
 ReactDOM.createRoot(root).render(
 	<React.StrictMode>
-		<RouterProvider router={router} />
+		<ThemeProvider defaultTheme="dark" storageKey="icyfinance.theme">
+			<RouterProvider router={router} />
+		</ThemeProvider>
 	</React.StrictMode>,
 );

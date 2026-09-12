@@ -1,7 +1,7 @@
 # IcyFinance
 
 A local-first personal finance desktop app built with Tauri, React, TypeScript,
-TanStack Router, Tailwind CSS, and shadcn/ui (Base UI, base-rhea), managed with pnpm.
+TanStack Router, Tailwind CSS, and shadcn/ui (Base UI, base-sera/mist), managed with pnpm.
 
 ## Development
 
@@ -61,18 +61,23 @@ There are no test files, test runners, or test scripts.
 
 ## Project structure
 
-The structure follows the referenced projects, especially SimulationHub's
-Tauri/Vite conventions:
+The structure follows IcySVG's page and component conventions, with finance
+logic kept in reusable hooks and library files:
 
 - `src/routes/` — thin TanStack file routes.
-- `src/modules/<Feature>/` — feature views, colocated hooks, and helpers.
-- `src/modules/Workspace/` — budget state, domain logic, validation, and the Tauri API bridge.
-- `src/components/` — shared application components.
+- `src/pages/` — PascalCase screen components, imported by the routes.
+- `src/components/` — kebab-case shared components, providers, and feature controls.
 - `src/components/ui/` — editable [shadcn components](https://ui.shadcn.com/docs/components.md), using Base UI.
-- `src/lib/` and `src/hooks/` — small shared utilities and hooks.
+- `src/lib/` — budget calculations, validation, CSV/backup helpers, and the Tauri storage bridge.
+- `src/hooks/` — screen and form state, separate from presentation.
 - `src/globals.css` — Tailwind entry point, theme tokens, and base styles.
 - `src-tauri/src/storage.rs` — embedded SQLite storage.
 - `src-tauri/src/export.rs` — native, atomic backup export.
 
 The router plugin generates `src/routeTree.gen.ts`. Add a file in `src/routes/`
 and run the dev server or build to regenerate it.
+
+`theme-provider.tsx` and `theme-toggle.tsx` follow IcySVG's shadcn setup:
+a Sun/Moon button, class-based light/dark styling, system-theme support, and
+a saved preference. The existing `icyfinance.theme` preference is preserved.
+Keep app helpers outside `src/lib/utils.ts`; shadcn owns that `cn` re-export.
