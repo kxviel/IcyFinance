@@ -59,22 +59,15 @@ export default function Transactions() {
 	return (
 		<>
 			<PageHeading
-				index="02"
-				title="Life, in little entries."
-				description="Every coffee, every payday, every step forward."
+				title="Transactions"
 				actions={
-					<>
-						<Button variant="outline" onClick={() => setImporting(true)}>
-							<Upload size={16} /> Import
-						</Button>
-						<Button variant="default" onClick={() => openTransaction()}>
-							<Plus size={16} /> Transaction
-						</Button>
-					</>
+					<Button variant="outline" onClick={() => setImporting(true)}>
+						<Upload size={16} /> Import
+					</Button>
 				}
 			/>
-			<div className="section-top flex items-center justify-between gap-5 [&_h2]:mt-3 max-[680px]:flex-wrap max-[680px]:[&_h2]:text-[24px] max-[680px]:[&_h2]:max-w-80 border-b border-border pt-1.25 pr-0 pb-5 pl-0 mt-1.5 max-[680px]:gap-2 max-[680px]:[&_.month-picker]:ml-auto">
-				<div className="flex items-center gap-3 text-muted-foreground w-[min(480px,_60%)] [&_input]:pl-0 [&_input]:border-0 [&_input]:text-[13px] max-[680px]:w-full">
+			<div className="section-top my-4">
+				<div className="flex items-center gap-3 text-muted-foreground w-[min(480px,_60%)] [&_input]:pl-0 [&_input]:border-0 [&_input]:text-sm max-[680px]:w-full">
 					<Search size={17} />
 					<Input
 						ref={searchRef}
@@ -87,7 +80,7 @@ export default function Transactions() {
 				</div>
 				<MonthPicker />
 			</div>
-			<div className="section-top flex items-center justify-between gap-5 [&_h2]:mt-3 max-[680px]:flex-wrap max-[680px]:gap-3.75 max-[680px]:[&_h2]:text-[24px] max-[680px]:[&_h2]:max-w-80 pt-4.5 pr-0 pb-6.25 pl-0 [&_select]:w-auto [&_select]:min-h-9 [&_select]:px-2.75 [&_select]:py-2 [&_select]:rounded-full [&_select]:text-[11px] [&_.check-label]:ml-2.5 max-[680px]:[&_.button-row]:gap-1.75 max-[680px]:[&_.check-label]:ml-0">
+			<div className="section-top my-4">
 				<div className="button-row flex items-center gap-2.5 flex-wrap">
 					<NativeSelect
 						aria-label="Filter by account"
@@ -110,7 +103,7 @@ export default function Transactions() {
 						<option value="uncleared">Uncleared</option>
 						<option value="uncategorized">Needs a category</option>
 					</NativeSelect>
-					<FieldLabel className="check-label inline-flex items-center gap-2.25 text-[11px] text-muted-foreground">
+					<FieldLabel className="check-label inline-flex items-center gap-2.25 text-sm text-muted-foreground">
 						<Checkbox
 							checked={allDates}
 							onCheckedChange={(checked) => setAllDates(checked)}
@@ -137,7 +130,7 @@ export default function Transactions() {
 				</Button>
 			</div>
 			<div className="table-scroll w-full overflow-x-auto">
-				<Table className="text-xs [&_td]:py-4 [&_th]:px-3 [&_th]:text-[10px] [&_th]:uppercase [&_th]:tracking-wide [&_thead]:border-t max-[680px]:min-w-157.5">
+				<Table className="text-base [&_td]:py-3.5 [&_thead]:border-t max-[680px]:min-w-157.5">
 					<TableHeader>
 						<TableRow>
 							<TableHead className="w-9.5" scope="col">
@@ -181,12 +174,12 @@ export default function Transactions() {
 								<TableCell>
 									<button
 										type="button"
-										className="text-left flex flex-col gap-1 p-0 min-w-32.5 [&:hover_strong]:underline [&:hover_strong]:underline-offset-1 [&_.small]:text-[10px] [&_.small]:max-w-62.5"
+										className="text-left flex flex-col gap-1 p-0 min-w-32.5 [&:hover_strong]:underline [&:hover_strong]:underline-offset-1 [&_.small]:text-sm [&_.small]:max-w-62.5"
 										onClick={() => openTransaction(item)}
 									>
 										<strong>{item.payee}</strong>
 										{item.memo && (
-											<span className="text-muted-foreground small text-[12px]">
+											<span className="text-muted-foreground small text-sm">
 												{item.memo}
 											</span>
 										)}
@@ -215,7 +208,7 @@ export default function Transactions() {
 										)?.name
 									}
 									{item.transferAccountId && (
-										<span className="small text-[12px]">
+										<span className="small text-sm">
 											{" "}
 											→{" "}
 											{
@@ -226,7 +219,7 @@ export default function Transactions() {
 										</span>
 									)}
 								</TableCell>
-								<TableCell className="text-right! numeric tabular-nums tracking-[-0.025em] whitespace-nowrap">
+								<TableCell className="text-right! numeric tabular-nums whitespace-nowrap">
 									{formatMoney(
 										account !== "all" && item.transferAccountId === account
 											? -item.amount
@@ -241,7 +234,7 @@ export default function Transactions() {
 			</div>
 			{!rows.length && (
 				<EmptyState
-					title="Nothing on this page. Yet."
+					title="No transactions"
 					description="Add a transaction or adjust your filters to see more."
 					action={
 						<Button variant="outline" onClick={() => openTransaction()}>
@@ -250,13 +243,11 @@ export default function Transactions() {
 					}
 				/>
 			)}
-			<div className="flex justify-between px-0 py-5 text-[9px] text-subtle tracking-[0.07em] max-[680px]:text-[8px] max-[680px]:gap-3.75">
+			<div className="flex flex-wrap justify-between gap-2 py-3 text-sm text-muted-foreground">
 				<span>
-					{rows.length} {rows.length === 1 ? "ENTRY" : "ENTRIES"}
+					{rows.length} {rows.length === 1 ? "transaction" : "transactions"}
 				</span>
-				<span>
-					C = CLEARED · LOCK = RECONCILED · FILTER ACCOUNT FOR TRANSFER STATUS
-				</span>
+				<span>C = cleared · Lock = reconciled</span>
 			</div>
 			{importing && <ImportDialog onClose={() => setImporting(false)} />}
 			{unlock && (

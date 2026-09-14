@@ -16,7 +16,7 @@ export const useOverview = () => {
 	const recent = [...doc.transactions]
 		.filter((transaction) => transaction.date.startsWith(month))
 		.sort((a, b) => b.date.localeCompare(a.date))
-		.slice(0, 5);
+		.slice(0, 8);
 	return {
 		doc,
 		month,
