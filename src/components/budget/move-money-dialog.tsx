@@ -20,19 +20,19 @@ function MoveMoneyDialog({ onClose }: { onClose: () => void }) {
 	const [error, setError] = useState("");
 	return (
 		<WorkspaceDialog
-			title="Plans can change."
+			title="Move money"
 			description="Move available money between envelopes without changing your total plan."
 			onClose={onClose}
 		>
 			<form
-				className="form-stack grid gap-5.5"
+				className="form-stack grid gap-4"
 				onSubmit={(event) => {
 					event.preventDefault();
 					try {
 						update((current) =>
 							moveMoney(current, from, to, month, parseMoney(amount)),
 						);
-						notify("Money moved. A little more room.");
+						notify("Money moved.");
 						onClose();
 					} catch (error) {
 						setError(message(error));
@@ -87,7 +87,7 @@ function MoveMoneyDialog({ onClose }: { onClose: () => void }) {
 				{error && (
 					<p
 						role="alert"
-						className="text-destructive text-[12px] px-0 py-3 leading-[1.7]"
+						className="text-destructive text-sm px-0 py-3 leading-[1.7]"
 					>
 						{error}
 					</p>

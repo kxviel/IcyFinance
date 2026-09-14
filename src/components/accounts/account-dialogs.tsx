@@ -80,11 +80,11 @@ const AccountDialogs = ({
 					description="Your transaction history and budget remain available. You can reopen the account whenever you need it."
 					onClose={() => setClosing(null)}
 				>
-					<div className="form-stack grid gap-5.5">
-						<div className="bg-card p-5 grid gap-3 [&>div]:flex [&>div]:[align-items:baseline] [&>div]:justify-between [&>div]:gap-4.5 [&>div]:text-[12px] [&>div:last-child]:border-t [&>div:last-child]:border-border [&>div:last-child]:pt-3">
+					<div className="form-stack grid gap-4">
+						<div className="bg-card p-5 grid gap-3 [&>div]:flex [&>div]:[align-items:baseline] [&>div]:justify-between [&>div]:gap-4.5 [&>div]:text-sm [&>div:last-child]:border-t [&>div:last-child]:border-border [&>div:last-child]:pt-3">
 							<div>
 								<span>Current balance</span>
-								<strong className="numeric tabular-nums tracking-[-0.025em] whitespace-nowrap">
+								<strong className="numeric tabular-nums whitespace-nowrap">
 									{money(closeBalance)}
 								</strong>
 							</div>
@@ -98,27 +98,27 @@ const AccountDialogs = ({
 							</div>
 						</div>
 						{closeBalance !== 0 && (
-							<p className="notice px-5 py-4 border border-border bg-card text-[12px] leading-[1.7] mx-0 my-5 [&_p+p]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
+							<p className="notice px-5 py-4 border border-border bg-card text-sm leading-[1.7] mx-0 my-5 [&_p+p]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
 								Transfer or spend the remaining balance, or correct it through
 								reconciliation. Accounts must have a zero balance before
 								closing.
 							</p>
 						)}
 						{closeSchedules > 0 && (
-							<p className="notice px-5 py-4 border border-border bg-card text-[12px] leading-[1.7] mx-0 my-5 [&_p+p]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
+							<p className="notice px-5 py-4 border border-border bg-card text-sm leading-[1.7] mx-0 my-5 [&_p+p]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
 								Pause or remove this account's active schedules before closing
 								it.
 							</p>
 						)}
 						{closeFutureEntries > 0 && (
-							<p className="notice px-5 py-4 border border-border bg-card text-[12px] leading-[1.7] mx-0 my-5 [&_p+p]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
+							<p className="notice px-5 py-4 border border-border bg-card text-sm leading-[1.7] mx-0 my-5 [&_p+p]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
 								Resolve the future-dated entries in your register before closing
 								this account.
 							</p>
 						)}
 						{dialogError && (
 							<p
-								className="text-destructive text-[12px] px-0 py-3 leading-[1.7]"
+								className="text-destructive text-sm px-0 py-3 leading-[1.7]"
 								role="alert"
 							>
 								{dialogError}
@@ -145,18 +145,18 @@ const AccountDialogs = ({
 			)}
 			{deleteSchedule && (
 				<WorkspaceDialog
-					title="Remove this rhythm?"
+					title="Delete schedule?"
 					description={`Delete the schedule for ${deleteSchedule.payee}. Its previously posted transactions will stay in your register.`}
 					onClose={() => setDeletingSchedule(null)}
 				>
-					<div className="form-stack grid gap-5.5">
-						<p className="notice px-5 py-4 border border-border bg-card text-[12px] leading-[1.7] mx-0 my-5 [&_p+p]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
+					<div className="form-stack grid gap-4">
+						<p className="notice px-5 py-4 border border-border bg-card text-sm leading-[1.7] mx-0 my-5 [&_p+p]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
 							{money(deleteSchedule.amount)} · {repeats[deleteSchedule.repeat]}{" "}
 							· Next {shortDate(deleteSchedule.nextDate)}
 						</p>
 						{dialogError && (
 							<p
-								className="text-destructive text-[12px] px-0 py-3 leading-[1.7]"
+								className="text-destructive text-sm px-0 py-3 leading-[1.7]"
 								role="alert"
 							>
 								{dialogError}

@@ -49,11 +49,11 @@ const ScheduleEditor = ({
 	} = useScheduleEditor({ schedule, onClose });
 	return (
 		<WorkspaceDialog
-			title={schedule ? "Keep your rhythm." : "Give the everyday a rhythm."}
+			title={schedule ? "Edit schedule" : "Add schedule"}
 			description="Plan recurring income and bills. Post each due occurrence when you're ready; scheduled amounts do not change your budget until posted."
 			onClose={onClose}
 		>
-			<form className="form-stack grid gap-5.5" onSubmit={save}>
+			<form className="form-stack grid gap-4" onSubmit={save}>
 				<Field>
 					<FieldLabel htmlFor={`${fieldId}-1`}>Payee</FieldLabel>
 					<Input
@@ -85,7 +85,7 @@ const ScheduleEditor = ({
 							))}
 					</NativeSelect>
 				</Field>
-				<div className="form-grid grid grid-cols-2 gap-5 max-[680px]:grid-cols-1 max-[680px]:gap-4.5">
+				<div className="form-grid grid grid-cols-2 gap-4 max-[680px]:grid-cols-1 max-[680px]:gap-4.5">
 					<Field>
 						<FieldLabel htmlFor={`${fieldId}-3`}>Direction</FieldLabel>
 						<NativeSelect
@@ -149,7 +149,7 @@ const ScheduleEditor = ({
 								: "Uncategorized expenses reduce Ready to assign until you categorize them."}
 					</FieldDescription>
 				</Field>
-				<div className="form-grid grid grid-cols-2 gap-5 max-[680px]:grid-cols-1 max-[680px]:gap-4.5">
+				<div className="form-grid grid grid-cols-2 gap-4 max-[680px]:grid-cols-1 max-[680px]:gap-4.5">
 					<Field>
 						<FieldLabel htmlFor={`${fieldId}-6`}>Next date</FieldLabel>
 						<Input
@@ -180,13 +180,13 @@ const ScheduleEditor = ({
 					</Field>
 				</div>
 				{dates.length > 0 && (
-					<div className="notice px-5 py-4 border border-border bg-card text-[12px] leading-[1.7] mx-0 my-5 [&_p+p]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
-						<span className="eyebrow inline-flex items-center gap-2.25 text-muted-foreground text-[10px] font-[550] leading-[1.4] tracking-[0.11em] uppercase">
+					<div className="notice px-5 py-4 border border-border bg-card text-sm leading-[1.7] mx-0 my-5 [&_p+p]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
+						<span className="text-sm font-medium text-muted-foreground">
 							{repeat === "once" ? "Planned occurrence" : "Next occurrences"}
 						</span>
 						<p>{dates.map((date) => shortDate(date)).join(" → ")}</p>
 						{(repeat === "monthly" || repeat === "yearly") && (
-							<span className="text-muted-foreground small text-[12px]">
+							<span className="text-muted-foreground small text-sm">
 								Short months use their last day. Later occurrences return to the
 								original day when it exists.
 							</span>
@@ -203,7 +203,7 @@ const ScheduleEditor = ({
 						onChange={(event) => setMemo(event.target.value)}
 					/>
 				</Field>
-				<FieldLabel className="check-label inline-flex items-center gap-2.25 text-[11px] text-muted-foreground">
+				<FieldLabel className="check-label inline-flex items-center gap-2.25 text-sm text-muted-foreground">
 					<Checkbox
 						checked={paused}
 						onCheckedChange={(checked) => setPaused(checked)}
@@ -212,7 +212,7 @@ const ScheduleEditor = ({
 				</FieldLabel>
 				{error && (
 					<p
-						className="text-destructive text-[12px] px-0 py-3 leading-[1.7]"
+						className="text-destructive text-sm px-0 py-3 leading-[1.7]"
 						role="alert"
 					>
 						{error}

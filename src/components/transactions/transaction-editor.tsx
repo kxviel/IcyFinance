@@ -1,5 +1,5 @@
 import { Plus, Trash2 } from "lucide-react";
-import { useId } from "react";
+import { useId, useRef } from "react";
 import { IconButton } from "@/components/icon-button";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -23,6 +23,7 @@ const TransactionEditor = ({
 	onClose: () => void;
 }) => {
 	const fieldId = useId();
+	const amountRef = useRef<HTMLInputElement>(null);
 
 	const {
 		doc,
@@ -62,16 +63,17 @@ const TransactionEditor = ({
 	} = useTransactionEditor({ transaction, onClose });
 	return (
 		<WorkspaceDialog
-			title={transaction ? "A closer look." : "A little movement."}
+			title={transaction ? "Edit transaction" : "Add transaction"}
 			description={
 				locked
 					? "This entry is reconciled. Remove reconciliation for both sides in the account-filtered register before editing."
-					: "The everyday details that make the bigger picture."
+					: ""
 			}
 			onClose={onClose}
 			wide
+			initialFocus={amountRef}
 		>
-			<form onSubmit={save} className="form-stack grid gap-5.5">
+			<form onSubmit={save} className="form-stack grid gap-5">
 				<fieldset disabled={locked}>
 					<ToggleGroup
 						aria-label="Transaction type"
@@ -98,7 +100,7 @@ const TransactionEditor = ({
 							<ToggleGroupItem
 								key={value}
 								value={value}
-								className="rounded-full px-4 text-[10px] uppercase tracking-wide data-pressed:bg-primary data-pressed:text-primary-foreground"
+								className="rounded-md px-3 text-sm data-pressed:bg-primary data-pressed:text-primary-foreground"
 							>
 								{label}
 							</ToggleGroupItem>
@@ -111,7 +113,8 @@ const TransactionEditor = ({
 							>{`Amount (${doc.currency})`}</FieldLabel>
 							<Input
 								id={`${fieldId}-1`}
-								className="text-[27px] tracking-[-0.04em] leading-[1] px-3.5 py-2.5"
+								ref={amountRef}
+								className="text-base tabular-nums"
 								required
 								inputMode="decimal"
 								value={amount}
@@ -179,9 +182,7 @@ const TransactionEditor = ({
 									value={payee}
 									onChange={(event) => setPayee(event.target.value)}
 									placeholder={
-										kind === "income"
-											? "Where did it come from?"
-											: "Who was it for?"
+										kind === "income" ? "Income source" : "Payee name"
 									}
 								/>
 								<datalist id="known-payees">
@@ -233,9 +234,9 @@ const TransactionEditor = ({
 					)}
 					{split && (
 						<div className="border-t border-border pt-4 [&>.field-hint]:mt-3.5">
-							<div className="section-top flex items-center justify-between gap-5 [&_h2]:mt-3 max-[680px]:flex-wrap max-[680px]:gap-3.75 max-[680px]:[&_h2]:text-[24px] max-[680px]:[&_h2]:max-w-80">
-								<span className="eyebrow inline-flex items-center gap-2.25 text-muted-foreground text-[10px] font-[550] leading-[1.4] tracking-[0.11em] uppercase">
-									SPLIT BETWEEN ENVELOPES
+							<div className="section-top my-4">
+								<span className="text-sm font-medium text-muted-foreground">
+									Split categories
 								</span>
 								<Button
 									variant="ghost"
@@ -251,7 +252,7 @@ const TransactionEditor = ({
 							</div>
 							{splits.map((item, index) => (
 								<div
-									className="grid grid-cols-[1fr_120px_28px] gap-2.5 mx-0 my-3 items-center [&_select]:text-[11px] [&_input]:text-[11px] max-[680px]:grid-cols-[1fr_80px_24px] max-[680px]:gap-1.5 max-[680px]:[&_input]:px-2 max-[680px]:[&_input]:py-2.5 max-[680px]:[&_select]:px-2 max-[680px]:[&_select]:py-2.5"
+									className="grid grid-cols-[1fr_120px_28px] gap-2.5 mx-0 my-3 items-center [&_select]:text-sm [&_input]:text-sm max-[680px]:grid-cols-[1fr_80px_24px] max-[680px]:gap-1.5 max-[680px]:[&_input]:px-2 max-[680px]:[&_input]:py-2.5 max-[680px]:[&_select]:px-2 max-[680px]:[&_select]:py-2.5"
 									key={item.id}
 								>
 									<NativeSelect
@@ -305,7 +306,7 @@ const TransactionEditor = ({
 									</IconButton>
 								</div>
 							))}
-							<p className="field-hint text-[10px] leading-[1.7] text-muted-foreground">
+							<p className="field-hint text-sm leading-[1.7] text-muted-foreground">
 								Split amounts must total the transaction. Use a negative split
 								for money moving opposite to the selected direction.
 							</p>
@@ -313,7 +314,7 @@ const TransactionEditor = ({
 					)}
 					<div className="flex justify-between flex-wrap gap-3">
 						{kind !== "transfer" && (
-							<FieldLabel className="check-label inline-flex items-center gap-2.25 text-[11px] text-muted-foreground">
+							<FieldLabel className="check-label inline-flex items-center gap-2.25 text-sm text-muted-foreground">
 								<Checkbox
 									checked={split}
 									onCheckedChange={(checked) => setSplit(checked)}
@@ -321,7 +322,7 @@ const TransactionEditor = ({
 								Split transaction
 							</FieldLabel>
 						)}
-						<FieldLabel className="check-label inline-flex items-center gap-2.25 text-[11px] text-muted-foreground">
+						<FieldLabel className="check-label inline-flex items-center gap-2.25 text-sm text-muted-foreground">
 							<Checkbox
 								checked={cleared}
 								onCheckedChange={(checked) => setCleared(checked)}
@@ -329,7 +330,7 @@ const TransactionEditor = ({
 							Cleared in source account
 						</FieldLabel>
 						{kind === "transfer" && (
-							<FieldLabel className="check-label inline-flex items-center gap-2.25 text-[11px] text-muted-foreground">
+							<FieldLabel className="check-label inline-flex items-center gap-2.25 text-sm text-muted-foreground">
 								<Checkbox
 									checked={transferCleared}
 									onCheckedChange={(checked) => setTransferCleared(checked)}
@@ -341,24 +342,25 @@ const TransactionEditor = ({
 					<Field>
 						<FieldLabel htmlFor={`${fieldId}-7`}>Memo</FieldLabel>
 						<Textarea
+							className="min-h-16"
 							id={`${fieldId}-7`}
 							rows={2}
 							maxLength={1000}
 							value={memo}
 							onChange={(event) => setMemo(event.target.value)}
-							placeholder="Something worth remembering?"
+							placeholder="Optional note"
 						/>
 					</Field>
 				</fieldset>
 				{error && (
 					<p
-						className="text-destructive text-[12px] px-0 py-3 leading-[1.7]"
+						className="text-destructive text-sm px-0 py-3 leading-[1.7]"
 						role="alert"
 					>
 						{error}
 					</p>
 				)}
-				<DialogFooter className="mt-1 border-t border-border pt-6 sm:justify-between">
+				<DialogFooter className="mt-1 border-t border-border pt-4 sm:justify-between">
 					{transaction && !locked ? (
 						<Button variant="destructive" onClick={() => setDeleting(true)}>
 							<Trash2 size={15} /> Delete
@@ -378,7 +380,7 @@ const TransactionEditor = ({
 			</form>
 			{deleting && (
 				<div
-					className="bg-card p-5 border border-border mt-6 text-[12px] [&_.button-row]:mt-4"
+					className="bg-card p-5 border border-border mt-6 text-sm [&_.button-row]:mt-4"
 					role="alert"
 				>
 					<p>

@@ -37,12 +37,11 @@ const CategoryEditor = ({
 	} = useCategoryEditor({ category, onClose });
 	return (
 		<WorkspaceDialog
-			title={category ? "Refine this envelope." : "Give it a name."}
-			description="A place for everyday spending, a bigger plan, or something just for you."
+			title={category ? "Edit category" : "Add category"}
 			onClose={onClose}
 		>
-			<form onSubmit={save} className="form-stack grid gap-5.5">
-				<div className="form-grid grid grid-cols-2 gap-5 max-[680px]:grid-cols-1 max-[680px]:gap-4.5">
+			<form onSubmit={save} className="form-stack grid gap-4">
+				<div className="form-grid grid grid-cols-2 gap-4 max-[680px]:grid-cols-1 max-[680px]:gap-4.5">
 					<Field>
 						<FieldLabel htmlFor={`${fieldId}-1`}>Category name</FieldLabel>
 						<Input
@@ -73,7 +72,7 @@ const CategoryEditor = ({
 						</datalist>
 					</Field>
 				</div>
-				<div className="form-grid grid grid-cols-2 gap-5 max-[680px]:grid-cols-1 max-[680px]:gap-4.5">
+				<div className="form-grid grid grid-cols-2 gap-4 max-[680px]:grid-cols-1 max-[680px]:gap-4.5">
 					<Field>
 						<FieldLabel
 							htmlFor={`${fieldId}-3`}
@@ -133,13 +132,13 @@ const CategoryEditor = ({
 						maxLength={1000}
 						value={note}
 						onChange={(event) => setNote(event.target.value)}
-						placeholder="What is this making room for?"
+						placeholder="Optional note"
 					/>
 				</Field>
 				{error && (
 					<p
 						role="alert"
-						className="text-destructive text-[12px] px-0 py-3 leading-[1.7]"
+						className="text-destructive text-sm px-0 py-3 leading-[1.7]"
 					>
 						{error}
 					</p>

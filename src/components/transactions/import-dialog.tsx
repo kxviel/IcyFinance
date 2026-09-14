@@ -29,12 +29,12 @@ function ImportDialog({ onClose }: { onClose: () => void }) {
 	}
 	return (
 		<WorkspaceDialog
-			title="Bring the details along."
+			title="Import transactions"
 			description="Import transactions from a CSV file. Review the preview before anything is added."
 			onClose={onClose}
 			wide
 		>
-			<div className="form-stack grid gap-5.5">
+			<div className="form-stack grid gap-4">
 				<Field>
 					<FieldLabel htmlFor={`${fieldId}-1`}>
 						{"Import into account"}
@@ -97,7 +97,7 @@ function ImportDialog({ onClose }: { onClose: () => void }) {
 							</span>
 						</div>
 						{parsed.errors.length > 0 && (
-							<div className="notice px-5 py-4 border border-border bg-card text-[12px] leading-[1.7] mx-0 my-5 [&_p+p]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
+							<div className="notice px-5 py-4 border border-border bg-card text-sm leading-[1.7] mx-0 my-5 [&_p+p]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
 								<p>Resolve these rows before importing:</p>
 								<ul>
 									{parsed.errors.slice(0, 10).map((item) => (
@@ -106,12 +106,12 @@ function ImportDialog({ onClose }: { onClose: () => void }) {
 								</ul>
 							</div>
 						)}
-						<div className="[&>div]:grid [&>div]:grid-cols-[90px_1fr_auto] [&>div]:gap-3.5 [&>div]:px-0 [&>div]:py-3 [&>div]:border-b [&>div]:border-border [&>div]:text-[12px]">
+						<div className="[&>div]:grid [&>div]:grid-cols-[90px_1fr_auto] [&>div]:gap-3.5 [&>div]:px-0 [&>div]:py-3 [&>div]:border-b [&>div]:border-border [&>div]:text-sm">
 							{parsed.transactions.slice(0, 6).map((item) => (
 								<div key={item.id}>
 									<span>{item.date}</span>
 									<strong>{item.payee}</strong>
-									<span className="numeric tabular-nums tracking-[-0.025em] whitespace-nowrap">
+									<span className="numeric tabular-nums whitespace-nowrap">
 										{formatMoney(item.amount, doc.currency)}
 									</span>
 								</div>
@@ -121,7 +121,7 @@ function ImportDialog({ onClose }: { onClose: () => void }) {
 				)}
 				{error && (
 					<p
-						className="text-destructive text-[12px] px-0 py-3 leading-[1.7]"
+						className="text-destructive text-sm px-0 py-3 leading-[1.7]"
 						role="alert"
 					>
 						{error}

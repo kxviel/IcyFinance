@@ -1,5 +1,4 @@
 import {
-	ArrowDownLeft,
 	ArrowUpRight,
 	Check,
 	CirclePause,
@@ -52,17 +51,11 @@ const ScheduleList = ({
 }: Props) => {
 	return (
 		<>
-			<div className="section-top max-[680px]:flex-wrap max-[680px]:gap-3.75 max-[680px]:[&_h2]:text-[24px] max-[680px]:[&_h2]:max-w-80 flex items-center justify-between gap-5 mt-15 mr-0 mb-6 ml-0 [&_h2]:mt-2.5">
+			<div className="section-top my-4">
 				<div>
-					<span className="eyebrow inline-flex items-center gap-2.25 text-muted-foreground text-[10px] font-[550] leading-[1.4] tracking-[0.11em] uppercase">
-						02 / THE REPEATING THINGS
-					</span>
-					<h2>A familiar rhythm.</h2>
-					<p className="text-muted-foreground">
-						Bills and paydays, one occurrence at a time.{" "}
-						{dueCount
-							? `${dueCount} ready to post.`
-							: "Everything has its time."}
+					<h2>Scheduled transactions</h2>
+					<p className="text-sm text-muted-foreground">
+						{dueCount ? `${dueCount} ready to post.` : "No payments due."}
 					</p>
 				</div>
 				<Button
@@ -70,10 +63,10 @@ const ScheduleList = ({
 					onClick={() => setScheduleEditor("new")}
 					disabled={!activeAccounts.length}
 				>
-					<Plus size={16} /> Schedule
+					<Plus size={16} /> Add schedule
 				</Button>
 			</div>
-			<div className="section-top flex items-center justify-between gap-5 [&_h2]:mt-3 max-[680px]:flex-wrap max-[680px]:gap-3.75 max-[680px]:[&_h2]:text-[24px] max-[680px]:[&_h2]:max-w-80">
+			<div className="section-top my-4">
 				<ToggleGroup
 					aria-label="Filter schedules"
 					value={[scheduleFilter]}
@@ -95,13 +88,13 @@ const ScheduleList = ({
 						<ToggleGroupItem
 							key={value}
 							value={value}
-							className="rounded-full px-4 text-[10px] uppercase tracking-wide data-pressed:bg-primary data-pressed:text-primary-foreground"
+							className="rounded-md px-3 text-sm data-pressed:bg-primary data-pressed:text-primary-foreground"
 						>
 							{label}
 						</ToggleGroupItem>
 					))}
 				</ToggleGroup>
-				<span className="text-muted-foreground small text-[12px]">
+				<span className="text-muted-foreground small text-sm">
 					Post adds an uncleared entry on its scheduled date.
 				</span>
 			</div>
@@ -114,28 +107,17 @@ const ScheduleList = ({
 					const due = !schedule.paused && schedule.nextDate <= today();
 					return (
 						<article
-							className={`flex items-center gap-5 px-0 py-5.75 border-b border-border max-[1200px]:gap-3 max-[1200px]:flex-wrap max-[680px]:gap-3.25 ${schedule.paused ? "is-paused" : ""}`}
+							className={`flex items-center gap-5 px-0 py-3 border-b border-border max-[1200px]:gap-3 max-[1200px]:flex-wrap max-[680px]:gap-3.25 ${schedule.paused ? "is-paused" : ""}`}
 							key={schedule.id}
 						>
-							<span
-								className="w-9 h-9 grid place-items-center border border-border rounded-full text-muted-foreground max-[680px]:hidden"
-								role="img"
-								aria-label={schedule.amount < 0 ? "Expense" : "Income"}
-							>
-								{schedule.amount < 0 ? (
-									<ArrowUpRight size={22} />
-								) : (
-									<ArrowDownLeft size={22} />
-								)}
-							</span>
-							<div className="flex-1 min-w-30 flex flex-col gap-1.5 [&_h3]:text-[14px] [&_.small]:text-[10px]">
+							<div className="flex-1 min-w-30 flex flex-col gap-1.5 [&_h3]:text-[14px] [&_.small]:text-sm">
 								<button
 									type="button"
-									className="text-left flex flex-col gap-1 p-0 min-w-32.5 [&:hover_strong]:underline [&:hover_strong]:underline-offset-1 [&_.small]:text-[10px] [&_.small]:max-w-62.5"
+									className="text-left flex flex-col gap-1 p-0 min-w-32.5 [&:hover_strong]:underline [&:hover_strong]:underline-offset-1 [&_.small]:text-sm [&_.small]:max-w-62.5"
 									onClick={() => setScheduleEditor(schedule)}
 								>
 									<strong>{schedule.payee}</strong>
-									<span className="text-muted-foreground small text-[12px]">
+									<span className="text-muted-foreground small text-sm">
 										{account.name} ·{" "}
 										{account.kind === "tracking"
 											? "Outside the budget"
@@ -148,18 +130,18 @@ const ScheduleList = ({
 									</span>
 								</button>
 								{schedule.memo && (
-									<span className="small text-[11px] text-muted-foreground">
+									<span className="small text-sm text-muted-foreground">
 										{schedule.memo}
 									</span>
 								)}
 							</div>
-							<div className="min-w-26.25 flex flex-col gap-1.25 text-[12px] max-[680px]:min-w-22.5 max-[680px]:text-[11px]">
+							<div className="min-w-26.25 flex flex-col gap-1.25 text-sm max-[680px]:min-w-22.5 max-[680px]:text-sm">
 								<strong>
 									<time dateTime={schedule.nextDate}>
 										{shortDate(schedule.nextDate)}
 									</time>
 								</strong>
-								<span className="text-muted-foreground small text-[12px]">
+								<span className="text-muted-foreground small text-sm">
 									{repeats[schedule.repeat]} ·{" "}
 									{schedule.paused
 										? "Paused"
@@ -172,10 +154,10 @@ const ScheduleList = ({
 												: "Upcoming"}
 								</span>
 							</div>
-							<strong className="numeric tabular-nums tracking-[-0.025em] whitespace-nowrap min-w-25 text-right text-[14px] max-[680px]:min-w-18.75 max-[680px]:text-[12px]">
+							<strong className="numeric tabular-nums whitespace-nowrap min-w-25 text-right text-[14px] max-[680px]:min-w-18.75 max-[680px]:text-sm">
 								{money(schedule.amount)}
 							</strong>
-							<div className="flex items-center gap-1 [&_[data-slot=button]]:text-[10px] [&_[data-slot=button]]:px-3 [&_[data-slot=button]]:py-2 [&_[data-slot=button]]:min-h-8.25 max-[1200px]:ml-auto max-[680px]:w-full max-[680px]:justify-end">
+							<div className="flex items-center gap-1 [&_[data-slot=button]]:text-sm [&_[data-slot=button]]:px-3 [&_[data-slot=button]]:py-2 [&_[data-slot=button]]:min-h-8.25 max-[1200px]:ml-auto max-[680px]:w-full max-[680px]:justify-end">
 								<Button
 									variant={due ? "default" : "outline"}
 									disabled={!due || account.closed}
@@ -225,11 +207,7 @@ const ScheduleList = ({
 			</div>
 			{!schedules.length && (
 				<EmptyState
-					title={
-						scheduleFilter === "due"
-							? "Nothing waiting on you."
-							: "Leave room for a rhythm."
-					}
+					title={scheduleFilter === "due" ? "No schedules due" : "No schedules"}
 					description={
 						scheduleFilter === "due"
 							? "Your active schedules are up to date. Upcoming entries appear when their date arrives."
@@ -251,15 +229,15 @@ const ScheduleList = ({
 					}
 				/>
 			)}
-			<div className="flex justify-between px-0 py-5 text-[9px] text-subtle tracking-[0.07em] max-[680px]:text-[8px] max-[680px]:gap-3.75">
-				<span>SCHEDULES ARE POSTED MANUALLY</span>
+			<div className="flex flex-wrap justify-between gap-2 py-3 text-sm text-muted-foreground">
+				<span>Schedules are posted manually.</span>
 				<button
 					type="button"
-					className="inline-flex items-center gap-2 text-[12px] px-0 py-1.25 text-muted-foreground no-underline hover:text-foreground"
+					className="inline-flex items-center gap-2 text-sm px-0 py-1.25 text-muted-foreground no-underline hover:text-foreground"
 					disabled={!activeAccounts.length}
 					onClick={() => openTransaction()}
 				>
-					Record something else <ArrowUpRight size={14} />
+					Add transaction <ArrowUpRight size={14} />
 				</button>
 			</div>
 		</>

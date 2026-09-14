@@ -15,19 +15,16 @@ const BackupSettings = ({
 	importFile,
 }: Props) => {
 	return (
-		<Card className="min-w-0 rounded-xl border border-border bg-background py-6 shadow-none ring-0">
+		<Card className="min-w-0 rounded-md border border-border bg-background py-4 shadow-none ring-0">
 			<CardHeader>
-				<div className="section-top flex items-center justify-between gap-5 [&_h2]:mt-3 max-[680px]:flex-wrap max-[680px]:gap-3.75 max-[680px]:[&_h2]:text-[24px] max-[680px]:[&_h2]:max-w-80">
+				<div className="section-top my-4">
 					<div>
-						<span className="eyebrow inline-flex items-center gap-2.25 text-muted-foreground text-[10px] font-[550] leading-[1.4] tracking-[0.11em] uppercase">
-							03 / KEEP A COPY
-						</span>
-						<h2>Yours to take.</h2>
+						<h2>Backups</h2>
 					</div>
 					<Download size={21} />
 				</div>
 			</CardHeader>
-			<CardContent className="grid gap-5">
+			<CardContent className="grid gap-3">
 				<p className="text-muted-foreground">
 					Export a portable JSON backup before making a large change, or restore
 					one you already have.
@@ -56,7 +53,7 @@ const BackupSettings = ({
 					onChange={importFile}
 					aria-label="Import an IcyFinance JSON backup"
 				/>
-				<p className="text-muted-foreground small text-[12px]">
+				<p className="text-muted-foreground small text-sm">
 					Imports are validated, and the current budget is exported before
 					replacement.
 				</p>

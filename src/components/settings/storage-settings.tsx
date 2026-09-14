@@ -9,23 +9,20 @@ type Props = Pick<
 >;
 const StorageSettings = ({ database, setDatabaseAttempt, busy }: Props) => {
 	return (
-		<Card className="min-w-0 rounded-xl border border-border bg-background py-6 shadow-none ring-0">
+		<Card className="min-w-0 rounded-md border border-border bg-background py-4 shadow-none ring-0">
 			<CardHeader>
-				<div className="section-top flex items-center justify-between gap-5 [&_h2]:mt-3 max-[680px]:flex-wrap max-[680px]:gap-3.75 max-[680px]:[&_h2]:text-[24px] max-[680px]:[&_h2]:max-w-80">
+				<div className="section-top my-4">
 					<div>
-						<span className="eyebrow inline-flex items-center gap-2.25 text-muted-foreground text-[10px] font-[550] leading-[1.4] tracking-[0.11em] uppercase">
-							02 / DATABASE
-						</span>
-						<h2>Local storage.</h2>
+						<h2>Storage</h2>
 					</div>
 					<Database size={22} />
 				</div>
 			</CardHeader>
-			<CardContent className="grid gap-5">
+			<CardContent className="grid gap-3">
 				<p className="text-muted-foreground">
 					Your budget saves automatically to SQLite.
 				</p>
-				<div className="notice px-5 py-4 border border-border bg-card text-[12px] leading-[1.7] mx-0 my-5 [&_p+p]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
+				<div className="notice px-5 py-4 border border-border bg-card text-sm leading-[1.7] mx-0 my-5 [&_p+p]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
 					<strong>SQLite</strong>
 					<p
 						className={

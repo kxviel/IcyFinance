@@ -36,11 +36,11 @@ const ReconcileDialog = ({
 	} = useReconcileDialog({ accountId, onClose });
 	return (
 		<WorkspaceDialog
-			title="Make the numbers meet."
+			title="Reconcile account"
 			description={`Reconcile ${account.name} against its cleared bank balance as of today. Mark settled entries cleared in the register first.`}
 			onClose={onClose}
 		>
-			<form className="form-stack grid gap-5.5" onSubmit={save}>
+			<form className="form-stack grid gap-4" onSubmit={save}>
 				<Field>
 					<FieldLabel
 						htmlFor={`${fieldId}-1`}
@@ -62,12 +62,12 @@ const ReconcileDialog = ({
 					</FieldDescription>
 				</Field>
 				<div
-					className="bg-card p-5 grid gap-3 [&>div]:flex [&>div]:[align-items:baseline] [&>div]:justify-between [&>div]:gap-4.5 [&>div]:text-[12px] [&>div:last-child]:border-t [&>div:last-child]:border-border [&>div:last-child]:pt-3"
+					className="bg-card p-5 grid gap-3 [&>div]:flex [&>div]:[align-items:baseline] [&>div]:justify-between [&>div]:gap-4.5 [&>div]:text-sm [&>div:last-child]:border-t [&>div:last-child]:border-border [&>div:last-child]:pt-3"
 					aria-live="polite"
 				>
 					<div>
 						<span className="text-muted-foreground">Opening balance</span>
-						<strong className="numeric tabular-nums tracking-[-0.025em] whitespace-nowrap">
+						<strong className="numeric tabular-nums whitespace-nowrap">
 							{money(account.openingBalance)}
 						</strong>
 					</div>
@@ -75,19 +75,19 @@ const ReconcileDialog = ({
 						<span className="text-muted-foreground">
 							Cleared entries through today
 						</span>
-						<strong className="numeric tabular-nums tracking-[-0.025em] whitespace-nowrap">
+						<strong className="numeric tabular-nums whitespace-nowrap">
 							{money(cleared.balance - account.openingBalance)}
 						</strong>
 					</div>
 					<div>
 						<span>IcyFinance cleared balance</span>
-						<strong className="numeric tabular-nums tracking-[-0.025em] whitespace-nowrap">
+						<strong className="numeric tabular-nums whitespace-nowrap">
 							{money(cleared.balance)}
 						</strong>
 					</div>
 					<div>
 						<span>Bank's cleared balance</span>
-						<strong className="numeric tabular-nums tracking-[-0.025em] whitespace-nowrap">
+						<strong className="numeric tabular-nums whitespace-nowrap">
 							{statementBalance === null ? "—" : money(statementBalance)}
 						</strong>
 					</div>
@@ -97,12 +97,12 @@ const ReconcileDialog = ({
 								? "Difference · all matched"
 								: "Adjustment needed"}
 						</span>
-						<strong className="numeric tabular-nums tracking-[-0.025em] whitespace-nowrap">
+						<strong className="numeric tabular-nums whitespace-nowrap">
 							{difference === null ? "—" : money(difference)}
 						</strong>
 					</div>
 				</div>
-				<p className="text-muted-foreground small text-[12px]">
+				<p className="text-muted-foreground small text-sm">
 					{pending.length} cleared{" "}
 					{pending.length === 1 ? "entry will" : "entries will"} be locked as
 					reconciled in this account. Uncleared and future entries stay as they
@@ -110,14 +110,14 @@ const ReconcileDialog = ({
 				</p>
 				{difference !== null && difference !== 0 && (
 					<>
-						<p className="notice px-5 py-4 border border-border bg-card text-[12px] leading-[1.7] mx-0 my-5 [&_p+p]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
+						<p className="notice px-5 py-4 border border-border bg-card text-sm leading-[1.7] mx-0 my-5 [&_p+p]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
 							First check for missing or duplicate transactions. Continuing adds
 							a {money(difference)} reconciliation adjustment dated{" "}
 							{shortDate(today())}.
 							{account.kind !== "tracking" &&
 								" This changes your budget's Ready to assign balance. Review its category in the register."}
 						</p>
-						<FieldLabel className="check-label inline-flex items-center gap-2.25 text-[11px] text-muted-foreground">
+						<FieldLabel className="check-label inline-flex items-center gap-2.25 text-sm text-muted-foreground">
 							<Checkbox
 								checked={consent === fingerprint}
 								onCheckedChange={(checked) =>
@@ -130,7 +130,7 @@ const ReconcileDialog = ({
 				)}
 				{error && (
 					<p
-						className="text-destructive text-[12px] px-0 py-3 leading-[1.7]"
+						className="text-destructive text-sm px-0 py-3 leading-[1.7]"
 						role="alert"
 					>
 						{error}

@@ -28,23 +28,23 @@ const ReplacementDialog = ({
 					busy={Boolean(busy)}
 					title={
 						replacement.kind === "empty"
-							? "A clean sheet."
+							? "Start empty budget"
 							: replacement.kind === "sample"
-								? "Explore a little possibility."
-								: "Bring this collection home."
+								? "Load sample budget"
+								: "Import budget"
 					}
 					description="This replaces the active SQLite budget after exporting a JSON backup of the current version."
 					onClose={() => {
 						if (!busy) setReplacement(null);
 					}}
 				>
-					<div className="form-stack grid gap-5.5">
-						<span className="eyebrow inline-flex items-center gap-2.25 text-muted-foreground text-[10px] font-[550] leading-[1.4] tracking-[0.11em] uppercase">
+					<div className="form-stack grid gap-4">
+						<span className="text-sm font-medium text-muted-foreground">
 							REPLACE WITH
 						</span>
 						<BudgetDetails document={replacement.document} />
 						{replacement.kind === "sample" && (
-							<p className="notice px-5 py-4 border border-border bg-card text-[12px] leading-[1.7] mx-0 my-5 [&_p+p]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
+							<p className="notice px-5 py-4 border border-border bg-card text-sm leading-[1.7] mx-0 my-5 [&_p+p]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
 								All sample names, accounts and transactions are fictional.
 								Sample data uses EUR.
 							</p>
@@ -52,7 +52,7 @@ const ReplacementDialog = ({
 						{error && (
 							<p
 								role="alert"
-								className="text-destructive text-[12px] px-0 py-3 leading-[1.7]"
+								className="text-destructive text-sm px-0 py-3 leading-[1.7]"
 							>
 								{error}
 							</p>

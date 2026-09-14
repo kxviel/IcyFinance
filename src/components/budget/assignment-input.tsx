@@ -28,7 +28,7 @@ function AssignmentInput({
 	}
 	return (
 		<Input
-			className="w-29.5 min-h-8.75 justify-self-end px-2.5 py-1.75 text-right text-[12px] tabular-nums border-transparent bg-transparent hover:border-border hover:bg-card focus:border-border focus:bg-card max-[680px]:w-20.5 max-[680px]:pr-1.25"
+			className="w-29.5 min-h-8.75 justify-self-end px-2.5 py-1.75 text-right text-sm tabular-nums border-transparent bg-transparent hover:border-border hover:bg-card focus:border-border focus:bg-card max-[680px]:w-20.5 max-[680px]:pr-1.25"
 			aria-label={`Assigned to ${category.name}`}
 			inputMode="decimal"
 			value={value}

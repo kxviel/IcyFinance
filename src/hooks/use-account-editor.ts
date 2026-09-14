@@ -69,9 +69,7 @@ export const useAccountEditor = ({
 						: [...current.accounts, next],
 				};
 			});
-			notify(
-				account ? "Account updated." : "Account added to your collection.",
-			);
+			notify(account ? "Account updated." : "Account added.");
 			onClose();
 		} catch (error) {
 			setError(message(error));

@@ -54,7 +54,7 @@ export const useCategoryEditor = ({
 						)
 					: [...current.categories, next],
 			}));
-			notify(category ? "Category updated." : "A new possibility added.");
+			notify(category ? "Category updated." : "Category added.");
 			onClose();
 		} catch (error) {
 			setError(message(error));

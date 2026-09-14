@@ -36,7 +36,7 @@ const AccountEditor = ({
 	} = useAccountEditor({ account, onClose });
 	return (
 		<WorkspaceDialog
-			title={account ? "A place for your money." : "Give your money a home."}
+			title={account ? "Edit account" : "Add account"}
 			description={
 				account
 					? "Update the details of your account."
@@ -44,7 +44,7 @@ const AccountEditor = ({
 			}
 			onClose={onClose}
 		>
-			<form className="form-stack grid gap-5.5" onSubmit={save}>
+			<form className="form-stack grid gap-4" onSubmit={save}>
 				<Field>
 					<FieldLabel htmlFor={`${fieldId}-1`}>Account name</FieldLabel>
 					<Input
@@ -57,7 +57,7 @@ const AccountEditor = ({
 						placeholder="Everyday account"
 					/>
 				</Field>
-				<div className="form-grid grid grid-cols-2 gap-5 max-[680px]:grid-cols-1 max-[680px]:gap-4.5">
+				<div className="form-grid grid grid-cols-2 gap-4 max-[680px]:grid-cols-1 max-[680px]:gap-4.5">
 					<Field>
 						<FieldLabel htmlFor={`${fieldId}-2`}>Account kind</FieldLabel>
 						<NativeSelect
@@ -91,13 +91,13 @@ const AccountEditor = ({
 						</FieldDescription>
 					</Field>
 				</div>
-				<p className="notice px-5 py-4 border border-border bg-card text-[12px] leading-[1.7] mx-0 my-5 [&_p+p]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
+				<p className="notice px-5 py-4 border border-border bg-card text-sm leading-[1.7] mx-0 my-5 [&_p+p]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
 					{kind === "tracking"
 						? "Tracking accounts count toward net worth, but their balances stay outside your budget envelopes. Use them for investments, assets, or liabilities."
 						: "This account contributes to your budget. Its opening balance is available to assign across your envelopes."}
 				</p>
 				{locked && (
-					<p className="text-muted-foreground small text-[12px]">
+					<p className="text-muted-foreground small text-sm">
 						{account?.closed
 							? "Reopen this account before changing its kind or opening balance."
 							: "Kind and opening balance are locked because this account has entries. Reconcile the account to correct its current balance."}
@@ -116,7 +116,7 @@ const AccountEditor = ({
 				</Field>
 				{error && (
 					<p
-						className="text-destructive text-[12px] px-0 py-3 leading-[1.7]"
+						className="text-destructive text-sm px-0 py-3 leading-[1.7]"
 						role="alert"
 					>
 						{error}
