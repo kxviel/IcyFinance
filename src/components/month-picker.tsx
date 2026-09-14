@@ -20,7 +20,7 @@ export function MonthPicker() {
 			</IconButton>
 			<Label
 				htmlFor={monthId}
-				className="relative min-w-31 justify-center text-xs focus-within:outline focus-within:outline-ring focus-within:outline-offset-4"
+				className="relative min-w-31 justify-center text-sm focus-within:outline focus-within:outline-ring focus-within:outline-offset-4"
 			>
 				{monthLabel(month)}
 				<Input

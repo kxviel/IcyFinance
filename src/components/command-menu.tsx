@@ -17,7 +17,11 @@ const CommandMenu = ({ onClose }: { onClose: () => void }) => {
 	].filter((item) => item.label.toLowerCase().includes(search));
 	const showNewTransaction = "new transaction".includes(search);
 	return (
-		<WorkspaceDialog title="Where to?" initialFocus={input} onClose={onClose}>
+		<WorkspaceDialog
+			title="Quick actions"
+			initialFocus={input}
+			onClose={onClose}
+		>
 			<Input
 				ref={input}
 				className="mb-3.75"
@@ -26,11 +30,11 @@ const CommandMenu = ({ onClose }: { onClose: () => void }) => {
 				value={query}
 				onChange={(event) => setQuery(event.target.value)}
 			/>
-			<div className="grid mb-5 [&_:is(button,_a)]:px-1.5 [&_:is(button,_a)]:py-3.75 [&_:is(button,_a)]:flex [&_:is(button,_a)]:items-center [&_:is(button,_a)]:justify-between [&_:is(button,_a)]:border-b [&_:is(button,_a)]:border-border [&_:is(button,_a)]:text-[13px] [&_:is(button,_a):hover]:bg-card [&_:is(button,_a)>span:first-child]:flex [&_:is(button,_a)>span:first-child]:items-center [&_:is(button,_a)>span:first-child]:gap-2.5">
+			<div className="grid mb-5 [&_:is(button,_a)]:px-1.5 [&_:is(button,_a)]:py-3.75 [&_:is(button,_a)]:flex [&_:is(button,_a)]:items-center [&_:is(button,_a)]:justify-between [&_:is(button,_a)]:border-b [&_:is(button,_a)]:border-border [&_:is(button,_a)]:text-sm [&_:is(button,_a):hover]:bg-card [&_:is(button,_a)>span:first-child]:flex [&_:is(button,_a)>span:first-child]:items-center [&_:is(button,_a)>span:first-child]:gap-2.5">
 				{commands.map((item) => (
 					<Link key={item.to} to={item.to} onClick={onClose}>
 						<span>{item.label}</span>
-						<span className="text-muted-foreground small text-[12px]">
+						<span className="text-muted-foreground small text-sm">
 							{item.key ? `Alt ${item.key}` : "↗"}
 						</span>
 					</Link>
@@ -46,7 +50,7 @@ const CommandMenu = ({ onClose }: { onClose: () => void }) => {
 						<span>
 							<Plus size={14} /> New transaction
 						</span>
-						<span className="text-muted-foreground small text-[12px]">N</span>
+						<span className="text-muted-foreground small text-sm">N</span>
 					</button>
 				)}
 				{!commands.length && !showNewTransaction && (
@@ -55,7 +59,7 @@ const CommandMenu = ({ onClose }: { onClose: () => void }) => {
 					</p>
 				)}
 			</div>
-			<p className="small text-[12px] text-muted-foreground">
+			<p className="small text-sm text-muted-foreground">
 				Alt + 1–6 to navigate · N to add · Ctrl/Cmd + Z to undo
 			</p>
 		</WorkspaceDialog>

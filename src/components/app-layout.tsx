@@ -27,11 +27,11 @@ const AppLayout = () => {
 			>
 				Skip to content
 			</a>
-			<div className="w-[min(1440px,_calc(100%_-_128px))] mx-auto my-0 min-[1700px]:w-[min(1600px,_calc(100%_-_240px))] max-[1200px]:w-[calc(100%_-_72px)] max-[960px]:w-[calc(100%_-_48px)] max-[680px]:w-[calc(100%_-_36px)] print:w-full">
+			<div className="mx-auto flex min-h-dvh w-full max-w-360 flex-col px-4 sm:px-6 print:px-0">
 				<Header openCommands={openCommands} />
 				{error && (
 					<div
-						className="px-5 py-4 border border-border bg-card text-[12px] leading-[1.7] mt-5 flex justify-between items-center gap-5 text-destructive"
+						className="px-5 py-4 border border-border bg-card text-sm leading-[1.7] mt-5 flex justify-between items-center gap-5 text-destructive"
 						role="alert"
 					>
 						<span>{error}</span>
@@ -43,7 +43,7 @@ const AppLayout = () => {
 				<main
 					id="main-content"
 					tabIndex={-1}
-					className="min-h-[65vh] pb-22 outline-none animate-[arrive_0.28s_ease-out] max-[680px]:pb-12.5 print:p-0"
+					className="min-w-0 flex-1 pb-6 outline-none print:p-0"
 				>
 					<Outlet />
 				</main>

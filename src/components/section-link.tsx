@@ -11,7 +11,7 @@ export function SectionLink({
 	return (
 		<button
 			type="button"
-			className="inline-flex items-center gap-2 text-[12px] px-0 py-1.25 text-muted-foreground no-underline hover:text-foreground"
+			className="inline-flex items-center gap-2 text-sm px-0 py-1.25 text-muted-foreground no-underline hover:text-foreground"
 			onClick={onClick}
 		>
 			{children}

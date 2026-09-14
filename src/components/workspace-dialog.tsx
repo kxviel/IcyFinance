@@ -45,11 +45,8 @@ const WorkspaceDialog = ({
 				wide && "sm:max-w-172.5",
 			)}
 		>
-			<DialogHeader className="gap-3 pr-8">
-				<span className="text-xs tracking-widest text-muted-foreground uppercase">
-					IcyFinance / Workspace
-				</span>
-				<DialogTitle className="text-3xl leading-tight tracking-tight">
+			<DialogHeader className="gap-1 pr-8">
+				<DialogTitle className="text-xl leading-tight font-semibold">
 					{title}
 				</DialogTitle>
 				{description && <DialogDescription>{description}</DialogDescription>}

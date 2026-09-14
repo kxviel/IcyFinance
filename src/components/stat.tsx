@@ -9,23 +9,17 @@ type StatProps = {
 
 export function Stat({ label, value, note, negative = false }: StatProps) {
 	return (
-		<div className="flex min-w-0 flex-col gap-2.5 py-7 pr-7 not-first:border-l not-first:border-border not-first:pl-7 max-[960px]:pr-5 max-[960px]:not-first:pl-5 max-[680px]:grid max-[680px]:grid-cols-[1fr_auto] max-[680px]:items-center max-[680px]:gap-2 max-[680px]:px-0 max-[680px]:py-5.5 max-[680px]:not-first:border-t max-[680px]:not-first:border-l-0 max-[680px]:not-first:pl-0 print:break-inside-avoid">
-			<span className="text-[10px] font-medium leading-snug tracking-widest text-muted-foreground uppercase max-[960px]:text-[9px]">
-				{label}
-			</span>
+		<div className="min-w-0 py-3 pr-4 not-first:border-l not-first:pl-4 max-sm:not-first:border-l-0 max-sm:not-first:border-t max-sm:not-first:pl-0">
+			<div className="text-sm text-muted-foreground">{label}</div>
 			<strong
 				className={cn(
-					"whitespace-nowrap text-[clamp(28px,3vw,42px)] font-[450] leading-tight tracking-[-0.06em] tabular-nums max-[960px]:text-[31px] max-[680px]:text-[32px]",
+					"mt-1 block text-3xl font-semibold tabular-nums",
 					negative && "text-destructive",
 				)}
 			>
 				{value}
 			</strong>
-			{note && (
-				<span className="text-[11px] text-muted-foreground max-[960px]:text-[10px] max-[680px]:col-span-full">
-					{note}
-				</span>
-			)}
+			{note && <p className="mt-1 text-sm text-muted-foreground">{note}</p>}
 		</div>
 	);
 }

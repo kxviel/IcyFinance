@@ -6,20 +6,14 @@ const WorkspaceStatus = () => {
 	const store = useBudgetStore();
 	if (!store.ready)
 		return (
-			<main className="w-[min(700px,_calc(100%_-_64px))] min-h-[80vh] m-auto flex flex-col items-start justify-center gap-6">
-				<span className="inline-flex items-center gap-2.75 p-0 text-[24px] leading-[1] font-[620] tracking-[-0.05em] whitespace-nowrap max-[960px]:text-[23px]">
-					IcyFinance
-					<span className="block w-3.5 h-3.5 border border-current [transform:rotate(45deg)] bg-[linear-gradient(90deg,_currentColor_50%,_transparent_50%)]" />
-				</span>
-				<p className="text-muted-foreground">Opening your collection…</p>
+			<main className="mx-auto flex min-h-dvh max-w-xl flex-col items-start justify-center gap-4 px-6">
+				<span className="text-base font-semibold">IcyFinance</span>
+				<p className="text-muted-foreground">Loading budget…</p>
 				<span className="block h-0.25 w-40 bg-[linear-gradient(_90deg,_var(--border),_var(--foreground),_var(--border)_)] [background-size:200%_100%] animate-[loading_1.5s_ease_infinite]" />
 			</main>
 		);
 	return (
-		<main className="w-[min(700px,_calc(100%_-_64px))] min-h-[80vh] m-auto flex flex-col items-start justify-center gap-6 [&_h1]:text-[54px] [&_p]:max-w-135 [&_p]:text-[13px] [&_p]:leading-[1.8] max-[680px]:[&_h1]:text-[38px]">
-			<span className="eyebrow inline-flex items-center gap-2.25 text-muted-foreground text-[10px] font-[550] leading-[1.4] tracking-[0.11em] uppercase">
-				ICYFINANCE / SQLITE
-			</span>
+		<main className="mx-auto flex min-h-dvh max-w-xl flex-col items-start justify-center gap-4 px-6">
 			<h1>
 				{isTauri()
 					? "Your budget couldn’t be opened."
