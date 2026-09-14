@@ -33,7 +33,7 @@
 	},
 	"bundle": {
 		"active": true,
-		"targets": "all",
+		"targets": ["deb"],
 		"category": "Finance",
 		"shortDescription": "A considered space for your money",
 		"longDescription": "A desktop envelope budget with accounts, transactions, targets, reports, and embedded SQLite storage.",
