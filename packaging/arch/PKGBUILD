@@ -3,9 +3,11 @@ pkgver=1.1.0
 pkgrel=1
 pkgdesc='Personal finance app with envelope budgeting and local SQLite storage'
 arch=('x86_64')
-depends=('webkit2gtk-4.1' 'gtk3' 'hicolor-icon-theme')
-options=('!strip' '!debug')
+depends=('cairo' 'desktop-file-utils' 'gdk-pixbuf2' 'glib2' 'gtk3' 'gtk-update-icon-cache' 'hicolor-icon-theme' 'libsoup' 'pango' 'webkit2gtk-4.1')
+options=('!strip' '!emptydirs')
+install=${pkgname}.install
 source=('icyfinance' 'icyfinance.desktop' 'icyfinance.png')
+sha256sums=('2504227588a4fe9abd2cb310316da2017f2488e5100dd1f91963bacb597e2f55' 'ca88436d14c77536ec91cf432a0afb1c5db0ba367d4e478a92ce7ef46381b603' 'aa695809e2e086f3725a7430a5cf3a3f37501ed706e38677397182687ae41b30')
 
 package() {
     install -Dm755 "$srcdir/icyfinance" "$pkgdir/usr/bin/icyfinance"
