@@ -13,7 +13,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import type { useAccounts } from "@/hooks/use-accounts";
-import { accountKinds, clearedState } from "@/lib/accounts";
+import { accountKinds, accountPurposes, clearedState } from "@/lib/accounts";
 import { accountBalance } from "@/lib/budget";
 
 type Props = Pick<
@@ -94,6 +94,9 @@ const AccountList = ({
 											<span className="block font-medium">{account.name}</span>
 											<span className="text-sm text-muted-foreground">
 												{accountKinds[account.kind]}
+												{account.purpose
+													? ` · ${accountPurposes[account.purpose]}`
+													: ""}
 												{account.closed ? " · Closed" : ""}
 											</span>
 										</button>

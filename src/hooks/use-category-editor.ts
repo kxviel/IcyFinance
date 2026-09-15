@@ -1,5 +1,6 @@
 import { type FormEvent, useState } from "react";
 import { useWorkspace } from "@/hooks/use-workspace";
+import { deleteCategory } from "@/lib/budget";
 import type { Category } from "@/lib/budget-types";
 import { message } from "@/lib/errors";
 import { inputMoney, parseMoney } from "@/lib/money";
@@ -23,6 +24,18 @@ export const useCategoryEditor = ({
 	);
 	const [dueDate, setDueDate] = useState(category?.target?.dueDate || "");
 	const [error, setError] = useState("");
+	const [confirmDelete, setConfirmDelete] = useState(false);
+	function remove() {
+		if (!category) return;
+		try {
+			update((current) => deleteCategory(current, category.id));
+			notify("Category deleted.");
+			onClose();
+		} catch (cause) {
+			setError(message(cause));
+			setConfirmDelete(false);
+		}
+	}
 	function save(event: FormEvent) {
 		event.preventDefault();
 		try {
@@ -75,6 +88,9 @@ export const useCategoryEditor = ({
 		dueDate,
 		setDueDate,
 		error,
+		confirmDelete,
+		setConfirmDelete,
+		remove,
 		save,
 	};
 };

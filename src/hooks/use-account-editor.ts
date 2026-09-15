@@ -1,7 +1,7 @@
 import { type FormEvent, useState } from "react";
 import { useWorkspace } from "@/hooks/use-workspace";
 import { belongsTo } from "@/lib/accounts";
-import type { Account, AccountKind } from "@/lib/budget-types";
+import type { Account, AccountKind, AccountPurpose } from "@/lib/budget-types";
 import { message } from "@/lib/errors";
 import { inputMoney, parseMoney } from "@/lib/money";
 
@@ -15,6 +15,9 @@ export const useAccountEditor = ({
 	const { doc, update, notify } = useWorkspace();
 	const [name, setName] = useState(account?.name ?? "");
 	const [kind, setKind] = useState<AccountKind>(account?.kind ?? "checking");
+	const [purpose, setPurpose] = useState<AccountPurpose | "">(
+		account?.purpose ?? "",
+	);
 	const [opening, setOpening] = useState(
 		inputMoney(account?.openingBalance ?? 0),
 	);
@@ -56,6 +59,7 @@ export const useAccountEditor = ({
 					id: accountId,
 					name: name.trim(),
 					kind,
+					...(purpose ? { purpose } : {}),
 					openingBalance,
 					note: note.trim(),
 					closed: previous?.closed ?? false,
@@ -81,6 +85,8 @@ export const useAccountEditor = ({
 		setName,
 		kind,
 		setKind,
+		purpose,
+		setPurpose,
 		opening,
 		setOpening,
 		note,

@@ -8,8 +8,8 @@ import { NativeSelect } from "@/components/ui/native-select";
 import { Textarea } from "@/components/ui/textarea";
 import WorkspaceDialog from "@/components/workspace-dialog";
 import { useAccountEditor } from "@/hooks/use-account-editor";
-import { accountKinds } from "@/lib/accounts";
-import type { Account, AccountKind } from "@/lib/budget-types";
+import { accountKinds, accountPurposes } from "@/lib/accounts";
+import type { Account, AccountKind, AccountPurpose } from "@/lib/budget-types";
 
 const AccountEditor = ({
 	account,
@@ -26,6 +26,8 @@ const AccountEditor = ({
 		setName,
 		kind,
 		setKind,
+		purpose,
+		setPurpose,
 		opening,
 		setOpening,
 		note,
@@ -91,6 +93,28 @@ const AccountEditor = ({
 						</FieldDescription>
 					</Field>
 				</div>
+				<Field>
+					<FieldLabel htmlFor={`${fieldId}-purpose`}>
+						Purpose (optional)
+					</FieldLabel>
+					<NativeSelect
+						id={`${fieldId}-purpose`}
+						value={purpose}
+						onChange={(event) =>
+							setPurpose(event.target.value as AccountPurpose | "")
+						}
+					>
+						<option value="">No purpose</option>
+						{Object.entries(accountPurposes).map(([value, label]) => (
+							<option key={value} value={value}>
+								{label}
+							</option>
+						))}
+					</NativeSelect>
+					<FieldDescription>
+						Describes how you use the account; its kind controls budgeting.
+					</FieldDescription>
+				</Field>
 				<p className="notice px-5 py-4 border border-border bg-card text-sm leading-[1.7] mx-0 my-5 [&_p+p]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
 					{kind === "tracking"
 						? "Tracking accounts count toward net worth, but their balances stay outside your budget envelopes. Use them for investments, assets, or liabilities."

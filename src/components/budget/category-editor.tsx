@@ -33,6 +33,9 @@ const CategoryEditor = ({
 		dueDate,
 		setDueDate,
 		error,
+		confirmDelete,
+		setConfirmDelete,
+		remove,
 		save,
 	} = useCategoryEditor({ category, onClose });
 	return (
@@ -144,6 +147,14 @@ const CategoryEditor = ({
 					</p>
 				)}
 				<DialogFooter className="mt-1 border-t border-border pt-6">
+					{category && (
+						<Button
+							variant={confirmDelete ? "destructive" : "ghost"}
+							onClick={confirmDelete ? remove : () => setConfirmDelete(true)}
+						>
+							{confirmDelete ? "Confirm delete" : "Delete category"}
+						</Button>
+					)}
 					<Button variant="outline" onClick={onClose}>
 						Cancel
 					</Button>
