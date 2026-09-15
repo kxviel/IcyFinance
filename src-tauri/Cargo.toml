@@ -4,7 +4,6 @@ version = "0.1.0"
 description = "A considered space for your money"
 authors = ["kxviel"]
 edition = "2021"
-rust-version = "1.85"
 
 [lib]
 name = "icyfinance_lib"
@@ -14,15 +13,20 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2.6", features = [] }
 
 [dependencies]
-tauri = { version = "2.9", features = [] }
-tauri-plugin-dialog = "2.7"
-tauri-plugin-single-instance = "2"
-serde_json = "1"
-tempfile = "3"
-rusqlite = { version = "0.40", features = ["bundled"] }
+rusqlite = { version = "0.40.2", features = ["bundled"] }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
+tauri = { version = "2.11.5", features = [] }
+tauri-plugin-dialog = "2.7.3"
+tauri-plugin-opener = "2.5.5"
+tempfile = "3.27.0"
 
 [profile.release]
 codegen-units = 1
 lto = true
-opt-level = "s"
+opt-level = 3
+panic = "abort"
 strip = true
+
+[target.'cfg(any(target_os = "macos", windows, target_os = "linux"))'.dependencies]
+tauri-plugin-single-instance = "2.4.4"
