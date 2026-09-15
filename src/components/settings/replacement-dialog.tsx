@@ -29,9 +29,7 @@ const ReplacementDialog = ({
 					title={
 						replacement.kind === "empty"
 							? "Start empty budget"
-							: replacement.kind === "sample"
-								? "Load sample budget"
-								: "Import budget"
+							: "Import budget"
 					}
 					description="This replaces the active SQLite budget after exporting a JSON backup of the current version."
 					onClose={() => {
@@ -43,12 +41,6 @@ const ReplacementDialog = ({
 							REPLACE WITH
 						</span>
 						<BudgetDetails document={replacement.document} />
-						{replacement.kind === "sample" && (
-							<p className="notice px-5 py-4 border border-border bg-card text-sm leading-[1.7] mx-0 my-5 [&_p+p]:mt-2 [&_ul]:list-disc [&_ul]:pl-5">
-								All sample names, accounts and transactions are fictional.
-								Sample data uses EUR.
-							</p>
-						)}
 						{error && (
 							<p
 								role="alert"

@@ -25,7 +25,7 @@ const Footer = () => {
 			<Button
 				variant="ghost"
 				size="sm"
-				title="Undo last change (Ctrl+Z)"
+				title="Undo last change"
 				disabled={!canUndo}
 				onClick={() => {
 					undo();

@@ -25,7 +25,7 @@ export const currencies = [
 export const maximumImportBytes = 32 * 1024 * 1024;
 
 export interface Replacement {
-	kind: "import" | "empty" | "sample";
+	kind: "import" | "empty";
 	document: BudgetDocument;
 	baseline: BudgetDocument;
 }

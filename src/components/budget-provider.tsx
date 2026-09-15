@@ -9,7 +9,7 @@ import {
 	useRef,
 	useState,
 } from "react";
-import { createDemoBudget } from "@/lib/budget-seed";
+import { createEmptyBudget } from "@/lib/budget-seed";
 import type { BudgetDocument } from "@/lib/budget-types";
 import { validateBudget } from "@/lib/budget-validation";
 import { loadBudget, saveBudget } from "@/lib/storage";
@@ -122,7 +122,7 @@ export function BudgetProvider({ children }: { children: ReactNode }) {
 		void loadBudget()
 			.then((saved) => {
 				if (cancelled) return;
-				const document = saved ?? validateBudget(createDemoBudget());
+				const document = saved ?? validateBudget(createEmptyBudget());
 				current.current = document;
 				loaded.current = true;
 				history.current = [];

@@ -37,7 +37,7 @@ const WorkspaceStatus = () => {
 						installation is needed.
 					</p>
 					<p className="text-muted-foreground">
-						Start it from this project with <code>pnpm desktop</code>.
+						Start it from this project with <code>pnpm tauri dev</code>.
 					</p>
 				</>
 			)}

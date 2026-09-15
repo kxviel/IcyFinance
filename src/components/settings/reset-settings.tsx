@@ -18,23 +18,15 @@ const ResetSettings = ({ isDirty, busy, prepareReset }: Props) => {
 			</CardHeader>
 			<CardContent className="grid gap-3">
 				<p className="text-muted-foreground">
-					Start an empty budget or load sample data. Your current budget is
-					backed up first.
+					Start an empty budget. Your current budget is backed up first.
 				</p>
 				<div className="button-row flex items-center gap-2.5 flex-wrap">
 					<Button
 						variant="outline"
-						onClick={() => prepareReset("empty")}
+						onClick={prepareReset}
 						disabled={Boolean(busy) || isDirty}
 					>
 						Start an empty budget
-					</Button>
-					<Button
-						variant="ghost"
-						onClick={() => prepareReset("sample")}
-						disabled={Boolean(busy) || isDirty}
-					>
-						Load sample budget
 					</Button>
 				</div>
 				{isDirty && (

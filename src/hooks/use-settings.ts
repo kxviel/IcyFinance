@@ -13,7 +13,7 @@ import {
 	maximumImportBytes,
 	type Replacement,
 } from "@/lib/backups";
-import { createDemoBudget, createEmptyBudget } from "@/lib/budget-seed";
+import { createEmptyBudget } from "@/lib/budget-seed";
 import { validateBudget } from "@/lib/budget-validation";
 import { message } from "@/lib/errors";
 import { getDatabaseStatus } from "@/lib/storage";
@@ -133,11 +133,11 @@ export const useSettings = () => {
 		});
 	}
 
-	function prepareReset(kind: "empty" | "sample") {
+	function prepareReset() {
 		setError("");
 		setReplacement({
-			kind,
-			document: kind === "empty" ? createEmptyBudget() : createDemoBudget(),
+			kind: "empty",
+			document: createEmptyBudget(current.current.currency),
 			baseline: current.current,
 		});
 	}

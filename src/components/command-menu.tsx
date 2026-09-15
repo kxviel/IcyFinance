@@ -13,7 +13,7 @@ const CommandMenu = ({ onClose }: { onClose: () => void }) => {
 	const search = query.trim().toLowerCase();
 	const commands = [
 		...navigation,
-		{ to: "/settings", label: "Settings & backups", key: "" } as const,
+		{ to: "/settings", label: "Settings & backups" } as const,
 	].filter((item) => item.label.toLowerCase().includes(search));
 	const showNewTransaction = "new transaction".includes(search);
 	return (
@@ -34,9 +34,6 @@ const CommandMenu = ({ onClose }: { onClose: () => void }) => {
 				{commands.map((item) => (
 					<Link key={item.to} to={item.to} onClick={onClose}>
 						<span>{item.label}</span>
-						<span className="text-muted-foreground small text-sm">
-							{item.key ? `Alt ${item.key}` : "↗"}
-						</span>
 					</Link>
 				))}
 				{showNewTransaction && (
@@ -50,7 +47,6 @@ const CommandMenu = ({ onClose }: { onClose: () => void }) => {
 						<span>
 							<Plus size={14} /> New transaction
 						</span>
-						<span className="text-muted-foreground small text-sm">N</span>
 					</button>
 				)}
 				{!commands.length && !showNewTransaction && (
@@ -59,9 +55,6 @@ const CommandMenu = ({ onClose }: { onClose: () => void }) => {
 					</p>
 				)}
 			</div>
-			<p className="small text-sm text-muted-foreground">
-				Alt + 1–6 to navigate · N to add · Ctrl/Cmd + Z to undo
-			</p>
 		</WorkspaceDialog>
 	);
 };

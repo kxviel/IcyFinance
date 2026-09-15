@@ -5,7 +5,7 @@ export const assertCents = (amount: number): number => {
 	return amount;
 };
 
-export const formatMoney = (cents: number, currency = "EUR"): string =>
+export const formatMoney = (cents: number, currency: string): string =>
 	new Intl.NumberFormat(undefined, {
 		style: "currency",
 		currency,

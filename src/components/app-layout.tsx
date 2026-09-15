@@ -6,7 +6,6 @@ import Footer from "@/components/footer";
 import Header from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
-import { useShortcuts } from "@/hooks/use-shortcuts";
 import { navigation } from "@/lib/navigation";
 
 const AppLayout = () => {
@@ -14,7 +13,6 @@ const AppLayout = () => {
 	const [commands, setCommands] = useState(false);
 	const openCommands = useCallback(() => setCommands(true), []);
 	const pathname = useLocation({ select: (location) => location.pathname });
-	useShortcuts(openCommands);
 	useEffect(() => {
 		document.title = `${navigation.find((item) => item.to === pathname)?.label ?? "Settings"} — IcyFinance`;
 	}, [pathname]);

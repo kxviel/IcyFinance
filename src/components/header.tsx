@@ -44,13 +44,13 @@ const Header = ({ openCommands }: { openCommands: () => void }) => {
 				<Button
 					size="sm"
 					onClick={() => openTransaction()}
-					title="Add transaction (N)"
+					title="Add transaction"
 				>
 					<Plus size={15} /> Add transaction
 				</Button>
 				<IconButton
 					className="max-sm:hidden"
-					label="Open command menu (Ctrl+K)"
+					label="Open quick actions"
 					onClick={openCommands}
 				>
 					<Command size={16} />

@@ -7,7 +7,7 @@ let writeQueue: Promise<void> = Promise.resolve();
 function requireDesktop() {
 	if (!isTauri()) {
 		throw new Error(
-			"SQLite storage is available through the IcyFinance desktop app. Start it with pnpm desktop.",
+			"SQLite storage is available through the IcyFinance desktop app. Start it with pnpm tauri dev.",
 		);
 	}
 }
