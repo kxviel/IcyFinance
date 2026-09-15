@@ -300,6 +300,87 @@ export const setAssignment = (
 	});
 };
 
+export const templatePreview = (doc: BudgetDocument, month: string) => {
+	assertMonth(month);
+	return doc.categories
+		.filter((category) => Object.hasOwn(doc.monthlyTemplate, category.id))
+		.map((category) => {
+			const assigned = categorySummary(doc, category.id, month).assigned;
+			const template = doc.monthlyTemplate[category.id];
+			return {
+				category,
+				assigned,
+				template,
+				increase: Math.max(0, assertCents(template - assigned)),
+			};
+		});
+};
+
+/** A template sets minimum assignments; higher manual assignments are preserved. */
+export const applyMonthlyTemplate = (
+	doc: BudgetDocument,
+	month: string,
+): BudgetDocument => {
+	const preview = templatePreview(doc, month);
+	const needed = sum(preview.map((row) => row.increase));
+	if (needed === 0) return doc;
+	if (needed > Math.max(0, budgetSummary(doc, month).readyToAssign))
+		throw new Error(
+			"There is not enough Ready to assign to apply the full template.",
+		);
+	return preview.reduce(
+		(next, row) =>
+			row.increase > 0
+				? setAssignment(next, row.category.id, month, row.template)
+				: next,
+		doc,
+	);
+};
+
+export const safeToSpendSummary = (doc: BudgetDocument, month: string) => {
+	assertMonth(month);
+	const selected = new Set(doc.safeToSpendCategoryIds);
+	const statuses = doc.categories
+		.filter((category) => selected.has(category.id))
+		.map((category) => categorySummary(doc, category.id, month));
+	return {
+		available: sum(statuses.map((status) => status.available)),
+		spent: sum(statuses.map((status) => -status.activity)),
+		categoryCount: statuses.length,
+	};
+};
+
+/** Only unused categories can be deleted; their optional metadata is removed atomically. */
+export const deleteCategory = (
+	doc: BudgetDocument,
+	categoryId: string,
+): BudgetDocument => {
+	categoryById(doc, categoryId);
+	if (
+		doc.allocations.some((item) => item.categoryId === categoryId) ||
+		doc.transactions.some(
+			(tx) =>
+				tx.categoryId === categoryId ||
+				tx.splits.some((split) => split.categoryId === categoryId),
+		) ||
+		doc.schedules.some((item) => item.categoryId === categoryId)
+	)
+		throw new Error(
+			"This category has assignments, transactions, or schedules. Keep its history instead of deleting it.",
+		);
+	const monthlyTemplate = Object.fromEntries(
+		Object.entries(doc.monthlyTemplate).filter(([id]) => id !== categoryId),
+	);
+	return save({
+		...doc,
+		categories: doc.categories.filter((item) => item.id !== categoryId),
+		monthlyTemplate,
+		safeToSpendCategoryIds: doc.safeToSpendCategoryIds.filter(
+			(id) => id !== categoryId,
+		),
+	});
+};
+
 export const moveMoney = (
 	doc: BudgetDocument,
 	fromId: string,

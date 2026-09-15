@@ -103,6 +103,22 @@ export const validateBudget = (value: unknown): BudgetDocument => {
 					["checking", "savings", "cash", "tracking"] as const,
 					`${path}.kind`,
 				),
+				...(item.purpose === undefined
+					? {}
+					: {
+							purpose: choice(
+								item.purpose,
+								[
+									"bills",
+									"spending",
+									"savings",
+									"subscriptions",
+									"investments",
+									"other",
+								] as const,
+								`${path}.purpose`,
+							),
+						}),
 				openingBalance: cents(item.openingBalance, `${path}.openingBalance`),
 				closed: bool(item.closed, `${path}.closed`),
 				note: text(item.note, `${path}.note`, 2000, true),
@@ -155,6 +171,40 @@ export const validateBudget = (value: unknown): BudgetDocument => {
 			? key
 			: fail(path, "category no longer exists.");
 	};
+	const monthlyTemplate: Record<string, number> = {};
+	if (root.monthlyTemplate !== undefined) {
+		const entries = Object.entries(
+			record(root.monthlyTemplate, "Monthly template"),
+		);
+		if (entries.length > 2000) fail("Monthly template", "too many categories.");
+		for (const [key, amount] of entries) {
+			const categoryId = categoryRef(key, `Monthly template.${key}`);
+			if (categoryId === null)
+				return fail("Monthly template", "a category is required.");
+			Object.defineProperty(monthlyTemplate, categoryId, {
+				value: cents(amount, `Monthly template.${key}`, true),
+				enumerable: true,
+				configurable: true,
+				writable: true,
+			});
+		}
+	}
+	const safeToSpendCategoryIds =
+		root.safeToSpendCategoryIds === undefined
+			? []
+			: array(
+					root.safeToSpendCategoryIds,
+					"Safe to spend categories",
+					(value, path) => {
+						const categoryId = categoryRef(value, path);
+						if (categoryId === null)
+							return fail(path, "a category is required.");
+						return categoryId;
+					},
+					2000,
+				);
+	if (new Set(safeToSpendCategoryIds).size !== safeToSpendCategoryIds.length)
+		fail("Safe to spend categories", "duplicate categories are not allowed.");
 	const allocations = array<Allocation>(
 		root.allocations,
 		"Assignments",
@@ -329,6 +379,8 @@ export const validateBudget = (value: unknown): BudgetDocument => {
 		accounts,
 		categories,
 		allocations,
+		monthlyTemplate,
+		safeToSpendCategoryIds,
 		transactions,
 		schedules,
 		updatedAt,

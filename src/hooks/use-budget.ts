@@ -9,6 +9,7 @@ export const useBudget = () => {
 	const [filter, setFilter] = useState("all");
 	const [editor, setEditor] = useState<Category | "new" | null>(null);
 	const [moving, setMoving] = useState(false);
+	const [templateOpen, setTemplateOpen] = useState(false);
 	const [collapsed, setCollapsed] = useState<string[]>([]);
 	const summary = budgetSummary(doc, month);
 	const money = (amount: number) => formatMoney(amount, doc.currency);
@@ -33,6 +34,8 @@ export const useBudget = () => {
 		setEditor,
 		moving,
 		setMoving,
+		templateOpen,
+		setTemplateOpen,
 		collapsed,
 		setCollapsed,
 		summary,

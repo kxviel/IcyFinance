@@ -1,6 +1,7 @@
 import { isTransactionCleared, isTransactionReconciled } from "@/lib/budget";
 import type {
 	AccountKind,
+	AccountPurpose,
 	BudgetDocument,
 	ScheduledTransaction,
 } from "@/lib/budget-types";
@@ -12,6 +13,15 @@ export const accountKinds: Record<AccountKind, string> = {
 	savings: "Savings",
 	cash: "Cash",
 	tracking: "Tracking",
+};
+
+export const accountPurposes: Record<AccountPurpose, string> = {
+	bills: "Bills",
+	spending: "Spending",
+	savings: "Savings",
+	subscriptions: "Subscriptions",
+	investments: "Investments",
+	other: "Other",
 };
 
 export const repeats: Record<ScheduledTransaction["repeat"], string> = {

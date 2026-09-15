@@ -1,9 +1,17 @@
 export type AccountKind = "checking" | "savings" | "cash" | "tracking";
+export type AccountPurpose =
+	| "bills"
+	| "spending"
+	| "savings"
+	| "subscriptions"
+	| "investments"
+	| "other";
 
 export interface Account {
 	id: string;
 	name: string;
 	kind: AccountKind;
+	purpose?: AccountPurpose;
 	openingBalance: number;
 	closed: boolean;
 	note: string;
@@ -74,6 +82,8 @@ export interface BudgetDocument {
 	accounts: Account[];
 	categories: Category[];
 	allocations: Allocation[];
+	monthlyTemplate: Record<string, number>;
+	safeToSpendCategoryIds: string[];
 	transactions: Transaction[];
 	schedules: ScheduledTransaction[];
 	updatedAt: string;

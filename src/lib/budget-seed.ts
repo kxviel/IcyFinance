@@ -8,6 +8,8 @@ export const createEmptyBudget = (currency = "EUR"): BudgetDocument => ({
 	accounts: [],
 	categories: [],
 	allocations: [],
+	monthlyTemplate: {},
+	safeToSpendCategoryIds: [],
 	transactions: [],
 	schedules: [],
 	updatedAt: new Date().toISOString(),
