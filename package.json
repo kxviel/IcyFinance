@@ -1,18 +1,17 @@
 {
 	"name": "icyfinance",
 	"private": true,
-	"version": "0.1.0",
+	"version": "1.1.0",
 	"type": "module",
 	"packageManager": "pnpm@12.4.1",
 	"scripts": {
 		"dev": "vite",
-		"build": "tsc && vite build",
+		"build": "tsc -b && vite build",
 		"preview": "vite preview",
 		"tauri": "tauri",
 		"lint": "biome lint .",
 		"format": "biome format --write .",
-		"check": "biome check --write .",
-		"typecheck": "tsc -b --pretty false"
+		"arch": "bash packaging/arch/arch_build.sh"
 	},
 	"dependencies": {
 		"@base-ui/react": "^1.8.0",

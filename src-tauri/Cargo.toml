@@ -1,7 +1,7 @@
 [package]
 name = "icyfinance"
-version = "0.1.0"
-description = "A considered space for your money"
+version = "1.1.0"
+description = "Personal finance with envelope budgeting and local SQLite storage"
 authors = ["kxviel"]
 edition = "2021"
 
@@ -26,7 +26,8 @@ codegen-units = 1
 lto = true
 opt-level = 3
 panic = "abort"
-strip = true
+# Keep symbols until the linuxdeploy stripping issue is resolved.
+strip = false
 
 [target.'cfg(any(target_os = "macos", windows, target_os = "linux"))'.dependencies]
 tauri-plugin-single-instance = "2.4.4"

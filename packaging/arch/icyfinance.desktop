@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=IcyFinance
+GenericName=Personal Finance
+Comment=Manage accounts, transactions, and envelope budgets on this device
+Exec=icyfinance
+Icon=icyfinance
+Terminal=false
+Type=Application
+Categories=Office;Finance;
+StartupNotify=true
+Keywords=Budget;Money;Accounts;Transactions;
