@@ -1,5 +1,6 @@
 import { MonthPicker } from "@/components/month-picker";
 import { PageHeading } from "@/components/page-heading";
+import SafeToSpendDialog from "@/components/safe-to-spend-dialog";
 import { SectionLink } from "@/components/section-link";
 import { Stat } from "@/components/stat";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,13 @@ export default function Overview() {
 		navigate,
 		openTransaction,
 		summary,
+		safe,
+		safeMonthKind,
+		daysRemaining,
+		perDay,
+		perWeek,
+		safeSettingsOpen,
+		setSafeSettingsOpen,
 		throughDate,
 		money,
 		featured,
@@ -35,6 +43,49 @@ export default function Overview() {
 				/>
 				<Stat label="Spent this month" value={money(summary.expenses)} />
 			</div>
+			<section className="mt-4 rounded-md border bg-card px-4 py-3">
+				<div className="flex flex-wrap items-start justify-between gap-3">
+					<div>
+						<h2 className="text-sm font-medium">Safe to Spend</h2>
+						<p
+							className={`mt-1 text-2xl font-semibold tabular-nums ${safe.available < 0 ? "text-destructive" : ""}`}
+						>
+							{money(safe.available)}
+						</p>
+						<p className="text-sm text-muted-foreground">
+							{safe.categoryCount === 0
+								? "Choose the categories that count as day-to-day spending."
+								: safeMonthKind === "future"
+									? `${safe.categoryCount} selected categories · Planned balance`
+									: `${safe.categoryCount} selected categories · ${money(safe.spent)} net spent ${safeMonthKind === "past" ? "in that month" : "this month"}`}
+						</p>
+					</div>
+					<Button
+						variant="ghost"
+						size="sm"
+						onClick={() => setSafeSettingsOpen(true)}
+					>
+						Choose categories
+					</Button>
+				</div>
+				{safe.categoryCount > 0 && safeMonthKind === "current" && (
+					<p className="mt-2 text-sm text-muted-foreground">
+						{daysRemaining} days left including today · About {money(perDay)}{" "}
+						per day · {money(perWeek)} per week
+						{safe.available < 0 ? " (selected categories are overspent)" : ""}
+					</p>
+				)}
+				{safe.categoryCount > 0 && safeMonthKind === "past" && (
+					<p className="mt-2 text-sm text-muted-foreground">
+						Historical category balance at month end.
+					</p>
+				)}
+				{safe.categoryCount > 0 && safeMonthKind === "future" && (
+					<p className="mt-2 text-sm text-muted-foreground">
+						Planned category balance; no spending pace yet.
+					</p>
+				)}
+			</section>
 			{summary.uncategorized > 0 && (
 				<div className="my-4 flex flex-wrap items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm">
 					<span>
@@ -171,6 +222,9 @@ export default function Overview() {
 					</section>
 				</section>
 			</div>
+			{safeSettingsOpen && (
+				<SafeToSpendDialog onClose={() => setSafeSettingsOpen(false)} />
+			)}
 		</>
 	);
 }

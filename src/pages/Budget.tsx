@@ -1,6 +1,7 @@
 import { ArrowRightLeft, Check, ChevronDown, Plus } from "lucide-react";
 import AssignmentInput from "@/components/budget/assignment-input";
 import CategoryEditor from "@/components/budget/category-editor";
+import MonthlyTemplateDialog from "@/components/budget/monthly-template-dialog";
 import MoveMoneyDialog from "@/components/budget/move-money-dialog";
 import { EmptyState } from "@/components/empty-state";
 import { MonthPicker } from "@/components/month-picker";
@@ -24,6 +25,8 @@ export default function Budget() {
 		setEditor,
 		moving,
 		setMoving,
+		templateOpen,
+		setTemplateOpen,
 		collapsed,
 		setCollapsed,
 		summary,
@@ -92,6 +95,9 @@ export default function Budget() {
 					))}
 				</ToggleGroup>
 				<div className="button-row flex items-center gap-2.5 flex-wrap">
+					<Button variant="ghost" onClick={() => setTemplateOpen(true)}>
+						Monthly template
+					</Button>
 					<Button
 						variant="ghost"
 						onClick={() => setMoving(true)}
@@ -245,6 +251,9 @@ export default function Budget() {
 				/>
 			)}
 			{moving && <MoveMoneyDialog onClose={() => setMoving(false)} />}
+			{templateOpen && (
+				<MonthlyTemplateDialog onClose={() => setTemplateOpen(false)} />
+			)}
 		</>
 	);
 }
