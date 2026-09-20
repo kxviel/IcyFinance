@@ -106,6 +106,7 @@ const categoryNumbers = (
 	doc: BudgetDocument,
 	categoryId: string,
 	month: string,
+	postedThrough = today(),
 ) => {
 	assertMonth(month);
 	categoryById(doc, categoryId);
@@ -121,7 +122,6 @@ const categoryNumbers = (
 	);
 	let activity = 0;
 	let totalActivity = 0;
-	const postedThrough = today();
 	for (const tx of doc.transactions) {
 		if (tx.date.slice(0, 7) > month || tx.date > postedThrough) continue;
 		for (const part of budgetParts(doc, tx)) {
@@ -203,14 +203,24 @@ export const categorySummary = (
 	return { ...amounts, target: progress.target, needed: progress.needed };
 };
 
-const cashFlow = (doc: BudgetDocument, transactions: Transaction[]) => {
+const cashFlow = (
+	doc: BudgetDocument,
+	transactions: Transaction[],
+	categoryIds?: ReadonlySet<string>,
+	postedThrough = today(),
+) => {
 	let income = 0;
 	let expenses = 0;
 	let uncategorized = 0;
-	const postedThrough = today();
 	for (const tx of transactions) {
-		if (tx.date > postedThrough) continue;
+		// Moving owned money across the budget boundary changes envelopes, not spending.
+		if (tx.date > postedThrough || tx.transferAccountId) continue;
 		for (const part of budgetParts(doc, tx)) {
+			if (
+				categoryIds &&
+				(part.categoryId === null || !categoryIds.has(part.categoryId))
+			)
+				continue;
 			if (part.categoryId === null && part.amount > 0)
 				income = sum([income, part.amount]);
 			else expenses = sum([expenses, -part.amount]); // Categorized refunds reduce expense.
@@ -290,6 +300,7 @@ export const setAssignment = (
 				? []
 				: [
 						{
+							...previous,
 							id: previous?.id ?? crypto.randomUUID(),
 							categoryId,
 							month,
@@ -300,12 +311,31 @@ export const setAssignment = (
 	});
 };
 
+export const monthlyTemplateFromMonth = (
+	doc: BudgetDocument,
+	month: string,
+) => {
+	assertMonth(month);
+	return Object.fromEntries(
+		doc.allocations
+			.filter((item) => item.month === month && item.amount > 0)
+			.map((item) => [item.categoryId, item.amount]),
+	);
+};
+
 export const templatePreview = (doc: BudgetDocument, month: string) => {
 	assertMonth(month);
 	return doc.categories
-		.filter((category) => Object.hasOwn(doc.monthlyTemplate, category.id))
+		.filter(
+			(category) =>
+				Object.hasOwn(doc.monthlyTemplate, category.id) &&
+				doc.monthlyTemplate[category.id] > 0,
+		)
 		.map((category) => {
-			const assigned = categorySummary(doc, category.id, month).assigned;
+			const assigned =
+				doc.allocations.find(
+					(item) => item.categoryId === category.id && item.month === month,
+				)?.amount ?? 0;
 			const template = doc.monthlyTemplate[category.id];
 			return {
 				category,
@@ -318,9 +348,10 @@ export const templatePreview = (doc: BudgetDocument, month: string) => {
 
 /** A template sets minimum assignments; higher manual assignments are preserved. */
 export const applyMonthlyTemplate = (
-	doc: BudgetDocument,
+	document: BudgetDocument,
 	month: string,
 ): BudgetDocument => {
+	const doc = validateBudget(document);
 	const preview = templatePreview(doc, month);
 	const needed = sum(preview.map((row) => row.increase));
 	if (needed === 0) return doc;
@@ -328,25 +359,61 @@ export const applyMonthlyTemplate = (
 		throw new Error(
 			"There is not enough Ready to assign to apply the full template.",
 		);
-	return preview.reduce(
-		(next, row) =>
-			row.increase > 0
-				? setAssignment(next, row.category.id, month, row.template)
-				: next,
-		doc,
+	const increases = new Map(
+		preview
+			.filter((row) => row.increase > 0)
+			.map((row) => [row.category.id, row.template]),
 	);
+	const allocations = doc.allocations.map((item) => {
+		const amount = increases.get(item.categoryId);
+		if (item.month !== month || amount === undefined) return item;
+		increases.delete(item.categoryId);
+		return { ...item, amount };
+	});
+	for (const [categoryId, amount] of increases) {
+		allocations.push({ id: crypto.randomUUID(), categoryId, month, amount });
+	}
+	return save({ ...doc, allocations });
 };
 
-export const safeToSpendSummary = (doc: BudgetDocument, month: string) => {
+export const safeToSpendSummary = (
+	doc: BudgetDocument,
+	month: string,
+	asOf = today(),
+) => {
 	assertMonth(month);
+	if (!validDate(asOf)) throw new Error("Choose a valid pacing date.");
 	const selected = new Set(doc.safeToSpendCategoryIds);
 	const statuses = doc.categories
 		.filter((category) => selected.has(category.id))
-		.map((category) => categorySummary(doc, category.id, month));
+		.map((category) => categoryNumbers(doc, category.id, month, asOf));
+	const available = sum(statuses.map((status) => status.available));
+	const currentMonth = asOf.slice(0, 7);
+	const monthKind =
+		month < currentMonth ? "past" : month > currentMonth ? "future" : "current";
+	const daysRemaining =
+		monthKind === "current"
+			? Number(endOfMonth(month).slice(8)) - Number(asOf.slice(8)) + 1
+			: 0;
+	// Round down to whole cents; the final partial week cannot exceed the balance.
+	const paceable = Math.max(0, available);
+	const perDay = daysRemaining > 0 ? Math.floor(paceable / daysRemaining) : 0;
+	const weekDays = Math.min(7, daysRemaining);
+	const perWeek =
+		daysRemaining > 0
+			? Number((BigInt(paceable) * BigInt(weekDays)) / BigInt(daysRemaining))
+			: 0;
 	return {
-		available: sum(statuses.map((status) => status.available)),
-		spent: sum(statuses.map((status) => -status.activity)),
+		available,
+		spent: cashFlow(doc, transactionsForMonth(doc, month), selected, asOf)
+			.expenses,
 		categoryCount: statuses.length,
+		overspentCount: statuses.filter((status) => status.available < 0).length,
+		monthKind,
+		daysRemaining,
+		weekDays,
+		perDay,
+		perWeek,
 	};
 };
 
@@ -633,7 +700,10 @@ export const monthReport = (doc: BudgetDocument, month: string) => {
 					id: category.id,
 					name: category.name,
 					group: category.group,
-					spent: Math.max(0, -status.activity),
+					spent: Math.max(
+						0,
+						cashFlow(doc, transactions, new Set([category.id])).expenses,
+					),
 					assigned: status.assigned,
 					available: status.available,
 				};

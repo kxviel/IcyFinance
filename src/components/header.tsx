@@ -10,7 +10,8 @@ import { cn } from "@/lib/utils";
 
 const Header = ({ openCommands }: { openCommands: () => void }) => {
 	const [menu, setMenu] = useState(false);
-	const { openTransaction } = useWorkspace();
+	const { doc, openTransaction } = useWorkspace();
+	const hasOpenAccount = doc.accounts.some((account) => !account.closed);
 	const pathname = useLocation({ select: (location) => location.pathname });
 	useEffect(() => {
 		setMenu(false);
@@ -44,7 +45,12 @@ const Header = ({ openCommands }: { openCommands: () => void }) => {
 				<Button
 					size="sm"
 					onClick={() => openTransaction()}
-					title="Add transaction"
+					disabled={!hasOpenAccount}
+					title={
+						hasOpenAccount
+							? "Add transaction"
+							: "Create or reopen an account before adding a transaction"
+					}
 				>
 					<Plus size={15} /> Add transaction
 				</Button>

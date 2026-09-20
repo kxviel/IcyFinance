@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import {
 	Check,
 	Download,
@@ -34,6 +35,7 @@ import { formatMoney } from "@/lib/money";
 import { exportTransactionsCsv } from "@/lib/transaction-csv";
 
 export default function Transactions() {
+	const navigate = useNavigate();
 	const {
 		doc,
 		openTransaction,
@@ -56,12 +58,22 @@ export default function Transactions() {
 		rows,
 		toggleCleared,
 	} = useTransactions();
+	const hasOpenAccount = doc.accounts.some((item) => !item.closed);
 	return (
 		<>
 			<PageHeading
 				title="Transactions"
 				actions={
-					<Button variant="outline" onClick={() => setImporting(true)}>
+					<Button
+						variant="outline"
+						onClick={() => setImporting(true)}
+						disabled={!hasOpenAccount}
+						title={
+							hasOpenAccount
+								? "Import transactions"
+								: "Create or reopen an account before importing transactions"
+						}
+					>
 						<Upload size={16} /> Import
 					</Button>
 				}
@@ -234,12 +246,25 @@ export default function Transactions() {
 			</div>
 			{!rows.length && (
 				<EmptyState
-					title="No transactions"
-					description="Add a transaction or adjust your filters to see more."
+					title={hasOpenAccount ? "No transactions" : "No open accounts"}
+					description={
+						hasOpenAccount
+							? "Add a transaction or adjust your filters to see more."
+							: "Create or reopen an account before adding transactions."
+					}
 					action={
-						<Button variant="outline" onClick={() => openTransaction()}>
-							Add transaction <Plus size={15} />
-						</Button>
+						hasOpenAccount ? (
+							<Button variant="outline" onClick={() => openTransaction()}>
+								Add transaction <Plus size={15} />
+							</Button>
+						) : (
+							<Button
+								variant="outline"
+								onClick={() => navigate({ to: "/accounts" })}
+							>
+								Manage accounts
+							</Button>
+						)
 					}
 				/>
 			)}

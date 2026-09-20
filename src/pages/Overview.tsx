@@ -16,10 +16,6 @@ export default function Overview() {
 		openTransaction,
 		summary,
 		safe,
-		safeMonthKind,
-		daysRemaining,
-		perDay,
-		perWeek,
 		safeSettingsOpen,
 		setSafeSettingsOpen,
 		throughDate,
@@ -45,19 +41,19 @@ export default function Overview() {
 			</div>
 			<section className="mt-4 rounded-md border bg-card px-4 py-3">
 				<div className="flex flex-wrap items-start justify-between gap-3">
-					<div>
+					<div className="min-w-0">
 						<h2 className="text-sm font-medium">Safe to Spend</h2>
 						<p
-							className={`mt-1 text-2xl font-semibold tabular-nums ${safe.available < 0 ? "text-destructive" : ""}`}
+							className={`mt-1 wrap-anywhere text-2xl font-semibold tabular-nums ${safe.available < 0 ? "text-destructive" : ""}`}
 						>
-							{money(safe.available)}
+							{safe.categoryCount > 0 ? money(safe.available) : "—"}
 						</p>
 						<p className="text-sm text-muted-foreground">
 							{safe.categoryCount === 0
 								? "Choose the categories that count as day-to-day spending."
-								: safeMonthKind === "future"
+								: safe.monthKind === "future"
 									? `${safe.categoryCount} selected categories · Planned balance`
-									: `${safe.categoryCount} selected categories · ${money(safe.spent)} net spent ${safeMonthKind === "past" ? "in that month" : "this month"}`}
+									: `${safe.categoryCount} selected categories · ${money(safe.spent)} net spent ${safe.monthKind === "past" ? "in that month" : "this month"}`}
 						</p>
 					</div>
 					<Button
@@ -68,19 +64,30 @@ export default function Overview() {
 						Choose categories
 					</Button>
 				</div>
-				{safe.categoryCount > 0 && safeMonthKind === "current" && (
+				{safe.categoryCount > 0 && safe.monthKind === "current" && (
 					<p className="mt-2 text-sm text-muted-foreground">
-						{daysRemaining} days left including today · About {money(perDay)}{" "}
-						per day · {money(perWeek)} per week
-						{safe.available < 0 ? " (selected categories are overspent)" : ""}
+						{safe.daysRemaining} {safe.daysRemaining === 1 ? "day" : "days"}{" "}
+						left including today · About {money(safe.perDay)} per day ·{" "}
+						{money(safe.perWeek)} over{" "}
+						{safe.weekDays === 7
+							? "the next 7 days"
+							: `the remaining ${safe.weekDays} ${safe.weekDays === 1 ? "day" : "days"}`}
 					</p>
 				)}
-				{safe.categoryCount > 0 && safeMonthKind === "past" && (
+				{safe.overspentCount > 0 && (
+					<p className="mt-2 text-sm text-destructive">
+						{safe.overspentCount} selected{" "}
+						{safe.overspentCount === 1 ? "category is" : "categories are"}{" "}
+						overspent. Their deficits reduce this total; move money to cover
+						them.
+					</p>
+				)}
+				{safe.categoryCount > 0 && safe.monthKind === "past" && (
 					<p className="mt-2 text-sm text-muted-foreground">
 						Historical category balance at month end.
 					</p>
 				)}
-				{safe.categoryCount > 0 && safeMonthKind === "future" && (
+				{safe.categoryCount > 0 && safe.monthKind === "future" && (
 					<p className="mt-2 text-sm text-muted-foreground">
 						Planned category balance; no spending pace yet.
 					</p>

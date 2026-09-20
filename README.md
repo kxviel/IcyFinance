@@ -78,9 +78,15 @@ Backups and the database contain unencrypted financial data.
 ## Checks
 
 ```bash
-pnpm typecheck
+pnpm exec tsc -b --pretty false
 pnpm lint
+pnpm exec biome check .
+pnpm test
 pnpm build
 cargo fmt --manifest-path src-tauri/Cargo.toml --check
 cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
 ```
+
+Domain regression tests use Node’s built-in test runner (Node 22.18+), with no
+additional test framework. Fixtures exist only under `tests/`; tests never open
+the desktop database.

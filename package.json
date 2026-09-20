@@ -10,6 +10,7 @@
 		"preview": "vite preview",
 		"tauri": "tauri",
 		"lint": "biome lint .",
+		"test": "node --import ./tests/register-aliases.mjs --test tests/*.test.mjs",
 		"format": "biome format --write .",
 		"arch": "bash packaging/arch/arch_build.sh"
 	},

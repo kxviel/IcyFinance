@@ -16,9 +16,19 @@ const WorkspaceProvider = ({ children }: { children: ReactNode }) => {
 	const store = useBudgetStore();
 	const [month, setMonth] = useState(currentMonth);
 	const [editor, setEditor] = useState<Transaction | "new" | null>(null);
-	const openTransaction = useCallback((transaction?: Transaction) => {
-		setEditor(transaction ?? "new");
-	}, []);
+	const openTransaction = useCallback(
+		(transaction?: Transaction) => {
+			if (
+				!transaction &&
+				!store.document?.accounts.some((account) => !account.closed)
+			) {
+				toast.error("Create or reopen an account before adding a transaction.");
+				return;
+			}
+			setEditor(transaction ?? "new");
+		},
+		[store.document],
+	);
 
 	if (!store.ready || !store.document) return <WorkspaceStatus />;
 

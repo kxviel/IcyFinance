@@ -146,6 +146,13 @@ const CategoryEditor = ({
 						{error}
 					</p>
 				)}
+				{confirmDelete && (
+					<p role="status" className="text-sm text-muted-foreground">
+						Delete this unused category and remove it from the monthly template
+						and Safe to Spend? Categories with financial history cannot be
+						deleted.
+					</p>
+				)}
 				<DialogFooter className="mt-1 border-t border-border pt-6">
 					{category && (
 						<Button

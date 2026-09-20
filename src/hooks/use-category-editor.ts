@@ -45,6 +45,7 @@ export const useCategoryEditor = ({
 			if (amount !== null && amount <= 0)
 				throw new Error("A target must be greater than zero.");
 			const next: Category = {
+				...category,
 				id: category?.id || crypto.randomUUID(),
 				name: name.trim(),
 				group: group.trim(),
@@ -54,9 +55,10 @@ export const useCategoryEditor = ({
 					amount === null
 						? null
 						: {
+								...category?.target,
 								amount,
 								cadence,
-								...(dueDate && cadence === "balance" ? { dueDate } : {}),
+								dueDate: dueDate && cadence === "balance" ? dueDate : undefined,
 							},
 			};
 			update((current) => ({

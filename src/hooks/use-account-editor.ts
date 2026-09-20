@@ -56,10 +56,11 @@ export const useAccountEditor = ({
 						"This account has transactions. Use reconciliation to correct its balance; its opening balance and kind are locked.",
 					);
 				const next: Account = {
+					...previous,
 					id: accountId,
 					name: name.trim(),
 					kind,
-					...(purpose ? { purpose } : {}),
+					purpose: purpose || undefined,
 					openingBalance,
 					note: note.trim(),
 					closed: previous?.closed ?? false,

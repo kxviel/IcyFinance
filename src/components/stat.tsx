@@ -13,7 +13,8 @@ export function Stat({ label, value, note, negative = false }: StatProps) {
 			<div className="text-sm text-muted-foreground">{label}</div>
 			<strong
 				className={cn(
-					"mt-1 block text-3xl font-semibold tabular-nums",
+					"mt-1 block wrap-anywhere font-semibold tabular-nums",
+					value.length > 14 ? "text-xl" : "text-3xl",
 					negative && "text-destructive",
 				)}
 			>

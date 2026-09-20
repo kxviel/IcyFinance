@@ -88,7 +88,7 @@ const AccountList = ({
 									<TableCell>
 										<button
 											type="button"
-											className="text-left hover:underline"
+											className="max-w-64 wrap-anywhere whitespace-normal text-left hover:underline"
 											onClick={() => setAccountEditor(account)}
 										>
 											<span className="block font-medium">{account.name}</span>

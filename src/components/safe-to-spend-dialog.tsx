@@ -52,7 +52,10 @@ const SafeToSpendDialog = ({ onClose }: { onClose: () => void }) => {
 									)
 								}
 							/>
-							<label htmlFor={`safe-${category.id}`} className="cursor-pointer">
+							<label
+								htmlFor={`safe-${category.id}`}
+								className="min-w-0 cursor-pointer wrap-anywhere"
+							>
 								<span className="block font-medium">{category.name}</span>
 								<span className="text-muted-foreground">{category.group}</span>
 							</label>
@@ -65,8 +68,9 @@ const SafeToSpendDialog = ({ onClose }: { onClose: () => void }) => {
 					)}
 				</div>
 				<p className="text-sm text-muted-foreground">
-					Only the selected category balances contribute. Account cash and
-					transfers do not.
+					Only these envelopes’ available balances contribute, including any
+					overspending. Moving money between budget accounts does not change
+					this total. Select none to turn off the summary.
 				</p>
 				{error && (
 					<p role="alert" className="text-sm text-destructive">

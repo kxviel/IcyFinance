@@ -99,6 +99,7 @@ const AccountEditor = ({
 					</FieldLabel>
 					<NativeSelect
 						id={`${fieldId}-purpose`}
+						aria-describedby={`${fieldId}-purpose-hint`}
 						value={purpose}
 						onChange={(event) =>
 							setPurpose(event.target.value as AccountPurpose | "")
@@ -111,7 +112,7 @@ const AccountEditor = ({
 							</option>
 						))}
 					</NativeSelect>
-					<FieldDescription>
+					<FieldDescription id={`${fieldId}-purpose-hint`}>
 						Describes how you use the account; its kind controls budgeting.
 					</FieldDescription>
 				</Field>

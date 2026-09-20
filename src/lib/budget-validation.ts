@@ -82,7 +82,7 @@ const unique = (items: { id: string }[], path: string): void => {
 	}
 };
 
-/** Validate and reconstruct trusted data. Unknown keys are never copied into state. */
+/** Validate known fields while preserving extension data in v1 backups. */
 export const validateBudget = (value: unknown): BudgetDocument => {
 	const root = record(value, "Budget");
 	if (root.schemaVersion !== 1)
@@ -96,6 +96,7 @@ export const validateBudget = (value: unknown): BudgetDocument => {
 		(value, path) => {
 			const item = record(value, path);
 			return {
+				...item,
 				id: id(item.id, `${path}.id`),
 				name: text(item.name, `${path}.name`, 100),
 				kind: choice(
@@ -135,6 +136,7 @@ export const validateBudget = (value: unknown): BudgetDocument => {
 			if (item.target !== null) {
 				const raw = record(item.target, `${path}.target`);
 				target = {
+					...raw,
 					amount: cents(raw.amount, `${path}.target.amount`, true),
 					cadence: choice(
 						raw.cadence,
@@ -146,6 +148,7 @@ export const validateBudget = (value: unknown): BudgetDocument => {
 					target.dueDate = date(raw.dueDate, `${path}.target.dueDate`);
 			}
 			return {
+				...item,
 				id: id(item.id, `${path}.id`),
 				name: text(item.name, `${path}.name`, 100),
 				group: text(item.group, `${path}.group`, 100),
@@ -214,6 +217,7 @@ export const validateBudget = (value: unknown): BudgetDocument => {
 			if (categoryId === null)
 				return fail(path, "assignment needs a category.");
 			return {
+				...item,
 				id: id(item.id, `${path}.id`),
 				month: month(item.month, `${path}.month`),
 				categoryId,
@@ -240,6 +244,7 @@ export const validateBudget = (value: unknown): BudgetDocument => {
 				(value, splitPath) => {
 					const split = record(value, splitPath);
 					return {
+						...split,
 						id: id(split.id, `${splitPath}.id`),
 						categoryId: categoryRef(
 							split.categoryId,
@@ -252,6 +257,7 @@ export const validateBudget = (value: unknown): BudgetDocument => {
 			);
 			unique(splits, `${path}.splits`);
 			const transaction: Transaction = {
+				...item,
 				id: id(item.id, `${path}.id`),
 				accountId: accountRef(item.accountId, `${path}.accountId`),
 				date: date(item.date, `${path}.date`),
@@ -266,6 +272,22 @@ export const validateBudget = (value: unknown): BudgetDocument => {
 				splits,
 				cleared: bool(item.cleared, `${path}.cleared`),
 				reconciled: bool(item.reconciled, `${path}.reconciled`),
+				...(item.transferCleared === undefined
+					? {}
+					: {
+							transferCleared: bool(
+								item.transferCleared,
+								`${path}.transferCleared`,
+							),
+						}),
+				...(item.transferReconciled === undefined
+					? {}
+					: {
+							transferReconciled: bool(
+								item.transferReconciled,
+								`${path}.transferReconciled`,
+							),
+						}),
 			};
 			if (transaction.reconciled && !transaction.cleared)
 				fail(path, "a reconciled transaction must also be cleared.");
@@ -281,13 +303,9 @@ export const validateBudget = (value: unknown): BudgetDocument => {
 				);
 			if (transaction.transferAccountId) {
 				transaction.transferCleared =
-					item.transferCleared === undefined
-						? transaction.cleared
-						: bool(item.transferCleared, `${path}.transferCleared`);
+					transaction.transferCleared ?? transaction.cleared;
 				transaction.transferReconciled =
-					item.transferReconciled === undefined
-						? transaction.reconciled
-						: bool(item.transferReconciled, `${path}.transferReconciled`);
+					transaction.transferReconciled ?? transaction.reconciled;
 				if (transaction.transferReconciled && !transaction.transferCleared)
 					fail(path, "a reconciled transfer destination must also be cleared.");
 				if (transaction.transferAccountId === transaction.accountId)
@@ -332,6 +350,7 @@ export const validateBudget = (value: unknown): BudgetDocument => {
 			)
 				fail(path, "recurring anchor day must be an integer between 1 and 31.");
 			return {
+				...item,
 				id: id(item.id, `${path}.id`),
 				accountId: accountRef(item.accountId, `${path}.accountId`),
 				payee: text(item.payee, `${path}.payee`, 300),
@@ -372,6 +391,7 @@ export const validateBudget = (value: unknown): BudgetDocument => {
 	if (!Number.isSafeInteger(gross))
 		fail("Budget", "aggregate amounts exceed the safe integer range.");
 	return {
+		...root,
 		schemaVersion: 1,
 		id: id(root.id, "Budget identifier"),
 		name: text(root.name, "Budget name", 100),

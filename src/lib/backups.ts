@@ -35,6 +35,7 @@ export function hasAmounts(document: BudgetDocument) {
 		document.accounts.some((account) => account.openingBalance !== 0) ||
 		document.transactions.length > 0 ||
 		document.allocations.some((allocation) => allocation.amount !== 0) ||
+		Object.values(document.monthlyTemplate).some((amount) => amount !== 0) ||
 		document.schedules.some((schedule) => schedule.amount !== 0) ||
 		document.categories.some((category) => (category.target?.amount ?? 0) !== 0)
 	);

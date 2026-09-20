@@ -3,7 +3,7 @@ import { useWorkspace } from "@/hooks/use-workspace";
 import {
 	applyMonthlyTemplate,
 	budgetSummary,
-	categorySummary,
+	monthlyTemplateFromMonth,
 	templatePreview,
 } from "@/lib/budget";
 import { message } from "@/lib/errors";
@@ -25,9 +25,21 @@ export const useMonthlyTemplate = (onClose: () => void) => {
 	const money = (amount: number) => formatMoney(amount, doc.currency);
 	const preview = templatePreview(doc, month);
 	const needed = preview.reduce((total, row) => total + row.increase, 0);
-	const ready = Math.max(0, budgetSummary(doc, month).readyToAssign);
+	const ready = budgetSummary(doc, month).readyToAssign;
 	const above = preview.filter((row) => row.assigned > row.template).length;
-	const canApply = preview.length > 0 && needed > 0 && needed <= ready;
+	const hasChanges = doc.categories.some((category) => {
+		try {
+			const raw = values[category.id]?.trim() ?? "";
+			const saved = Object.hasOwn(doc.monthlyTemplate, category.id)
+				? doc.monthlyTemplate[category.id]
+				: 0;
+			return (raw ? parseMoney(raw) : 0) !== saved;
+		} catch {
+			return true;
+		}
+	});
+	const canApply =
+		!hasChanges && preview.length > 0 && needed > 0 && needed <= ready;
 
 	function saveTemplate() {
 		try {
@@ -49,14 +61,9 @@ export const useMonthlyTemplate = (onClose: () => void) => {
 		}
 	}
 
-	function saveCurrentMonth() {
-		const entries = doc.categories.flatMap((category) => {
-			const amount = categorySummary(doc, category.id, month).assigned;
-			return amount > 0 ? [[category.id, amount] as const] : [];
-		});
-		const template = Object.fromEntries(entries);
+	function copyCurrentMonth() {
 		try {
-			update((current) => ({ ...current, monthlyTemplate: template }));
+			const template = monthlyTemplateFromMonth(doc, month);
 			setValues(
 				Object.fromEntries(
 					doc.categories.map((category) => [
@@ -68,7 +75,6 @@ export const useMonthlyTemplate = (onClose: () => void) => {
 				),
 			);
 			setError("");
-			notify("This month’s assignments saved as the template.");
 		} catch (cause) {
 			setError(message(cause));
 		}
@@ -76,6 +82,8 @@ export const useMonthlyTemplate = (onClose: () => void) => {
 
 	function applyTemplate() {
 		try {
+			if (hasChanges)
+				throw new Error("Save your template changes before applying.");
 			update((current) => applyMonthlyTemplate(current, month));
 			notify("Monthly template applied.");
 			onClose();
@@ -96,8 +104,9 @@ export const useMonthlyTemplate = (onClose: () => void) => {
 		ready,
 		above,
 		canApply,
+		hasChanges,
 		saveTemplate,
-		saveCurrentMonth,
+		copyCurrentMonth,
 		applyTemplate,
 	};
 };

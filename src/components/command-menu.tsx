@@ -9,7 +9,8 @@ import { navigation } from "@/lib/navigation";
 const CommandMenu = ({ onClose }: { onClose: () => void }) => {
 	const [query, setQuery] = useState("");
 	const input = useRef<HTMLInputElement>(null);
-	const { openTransaction } = useWorkspace();
+	const { doc, openTransaction } = useWorkspace();
+	const hasOpenAccount = doc.accounts.some((account) => !account.closed);
 	const search = query.trim().toLowerCase();
 	const commands = [
 		...navigation,
@@ -36,7 +37,7 @@ const CommandMenu = ({ onClose }: { onClose: () => void }) => {
 						<span>{item.label}</span>
 					</Link>
 				))}
-				{showNewTransaction && (
+				{showNewTransaction && hasOpenAccount && (
 					<button
 						type="button"
 						onClick={() => {
@@ -48,6 +49,13 @@ const CommandMenu = ({ onClose }: { onClose: () => void }) => {
 							<Plus size={14} /> New transaction
 						</span>
 					</button>
+				)}
+				{showNewTransaction && !hasOpenAccount && (
+					<Link to="/accounts" onClick={onClose}>
+						<span>
+							<Plus size={14} /> Create or reopen an account first
+						</span>
+					</Link>
 				)}
 				{!commands.length && !showNewTransaction && (
 					<p className="text-muted-foreground" role="status">
