@@ -1,0 +1,21 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+
+  "categories": {
+    "correctness": "error"
+  },
+
+  "rules": {
+    "no-unused-vars": [
+      "error",
+      {
+        "fix": {
+          "imports": "safe-fix",
+          "variables": "off"
+        }
+      }
+    ]
+  },
+
+  "ignorePatterns": ["public/favicon.svg", "src/routeTree.gen.ts"]
+}
