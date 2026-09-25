@@ -33,6 +33,7 @@ export default function Budget() {
 		money,
 		visible,
 		groups,
+		assignedByGroup,
 	} = useBudget();
 	return (
 		<>
@@ -132,7 +133,7 @@ export default function Budget() {
 					<section className="mt-1.25 max-[680px]:min-w-128.75" key={group}>
 						<button
 							type="button"
-							className="flex w-full items-center gap-2.5 px-4 py-3 text-muted-foreground text-sm bg-card [&>:last-child]:ml-auto [&>:last-child]:text-sm [&_svg]:[transition:transform_0.15s]"
+							className="grid w-full grid-cols-[minmax(190px,_1fr)_150px_150px_160px] items-center gap-4 px-3 py-3 text-left text-muted-foreground text-sm bg-card [&_svg]:[transition:transform_0.15s] max-[1200px]:grid-cols-[minmax(190px,_1fr)_110px_115px_120px] max-[1200px]:gap-2.5 max-[680px]:grid-cols-[minmax(155px,_1fr)_85px_85px_100px] max-[680px]:min-w-128.75 max-[680px]:pl-2.25 max-[680px]:pr-2.25 max-[680px]:gap-1.5"
 							aria-expanded={!collapsed.includes(group)}
 							onClick={() =>
 								setCollapsed((current) =>
@@ -142,18 +143,29 @@ export default function Budget() {
 								)
 							}
 						>
-							<ChevronDown
-								size={15}
-								style={{
-									transform: collapsed.includes(group)
-										? "rotate(-90deg)"
-										: undefined,
-								}}
-							/>
-							<span>{group}</span>
-							<span className="text-muted-foreground">
-								{visible.filter((item) => item.group === group).length}
+							<span className="flex min-w-0 items-center gap-2.5">
+								<ChevronDown
+									size={15}
+									className="shrink-0"
+									style={{
+										transform: collapsed.includes(group)
+											? "rotate(-90deg)"
+											: undefined,
+									}}
+								/>
+								<span className="truncate">{group}</span>
+								<span
+									className="shrink-0 text-xs"
+									aria-label={`${visible.filter((item) => item.group === group).length} categories`}
+								>
+									{visible.filter((item) => item.group === group).length}
+								</span>
 							</span>
+							<span className="text-right tabular-nums whitespace-nowrap text-foreground">
+								{money(assignedByGroup[group])}
+							</span>
+							<span aria-hidden="true" />
+							<span aria-hidden="true" />
 						</button>
 						{!collapsed.includes(group) &&
 							visible

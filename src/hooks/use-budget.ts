@@ -23,6 +23,18 @@ export const useBudget = () => {
 		);
 	});
 	const groups = [...new Set(visible.map((item) => item.group))];
+	const assignedByGroup = Object.fromEntries(
+		groups.map((group) => [
+			group,
+			doc.categories
+				.filter((category) => category.group === group && !category.hidden)
+				.reduce(
+					(total, category) =>
+						total + categorySummary(doc, category.id, month).assigned,
+					0,
+				),
+		]),
+	);
 	return {
 		doc,
 		month,
@@ -42,5 +54,6 @@ export const useBudget = () => {
 		money,
 		visible,
 		groups,
+		assignedByGroup,
 	};
 };
