@@ -40,7 +40,7 @@ function getStoredTheme(storageKey: string, fallback: Theme): Theme {
 
 export function ThemeProvider({
 	children,
-	defaultTheme = "system",
+	defaultTheme = "light",
 	storageKey = "vite-ui-theme",
 }: ThemeProviderProps) {
 	const [theme, setTheme] = useState<Theme>(() =>
@@ -61,6 +61,9 @@ export function ThemeProvider({
 		const root = window.document.documentElement;
 		root.classList.toggle("dark", resolvedTheme === "dark");
 		root.classList.toggle("light", resolvedTheme === "light");
+		document
+			.querySelector('meta[name="theme-color"]')
+			?.setAttribute("content", resolvedTheme === "dark" ? "#0d0807" : "#f8f3f2");
 	}, [resolvedTheme]);
 
 	const value = {

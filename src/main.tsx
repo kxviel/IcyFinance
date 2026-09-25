@@ -21,7 +21,7 @@ const root = document.getElementById("root");
 if (!root) throw new Error("App root was not found.");
 ReactDOM.createRoot(root).render(
 	<React.StrictMode>
-		<ThemeProvider defaultTheme="dark" storageKey="icyfinance.theme">
+		<ThemeProvider defaultTheme="light" storageKey="icyfinance.theme">
 			<RouterProvider router={router} />
 		</ThemeProvider>
 	</React.StrictMode>,
