@@ -8,6 +8,7 @@ export const useBudget = () => {
 	const { doc, month, update, notify } = useWorkspace();
 	const [filter, setFilter] = useState("all");
 	const [editor, setEditor] = useState<Category | "new" | null>(null);
+	const [deleting, setDeleting] = useState<Category | null>(null);
 	const [moving, setMoving] = useState(false);
 	const [templateOpen, setTemplateOpen] = useState(false);
 	const [collapsed, setCollapsed] = useState<string[]>([]);
@@ -23,14 +24,14 @@ export const useBudget = () => {
 		);
 	});
 	const groups = [...new Set(visible.map((item) => item.group))];
-	const assignedByGroup = Object.fromEntries(
+	const neededByGroup = Object.fromEntries(
 		groups.map((group) => [
 			group,
 			doc.categories
 				.filter((category) => category.group === group && !category.hidden)
 				.reduce(
 					(total, category) =>
-						total + categorySummary(doc, category.id, month).assigned,
+						total + categorySummary(doc, category.id, month).needed,
 					0,
 				),
 		]),
@@ -44,6 +45,8 @@ export const useBudget = () => {
 		setFilter,
 		editor,
 		setEditor,
+		deleting,
+		setDeleting,
 		moving,
 		setMoving,
 		templateOpen,
@@ -54,6 +57,6 @@ export const useBudget = () => {
 		money,
 		visible,
 		groups,
-		assignedByGroup,
+		neededByGroup,
 	};
 };

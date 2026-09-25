@@ -1,9 +1,18 @@
-import { ArrowRightLeft, Check, ChevronDown, Plus } from "lucide-react";
+import {
+	ArrowRightLeft,
+	Check,
+	ChevronDown,
+	Pencil,
+	Plus,
+	Trash2,
+} from "lucide-react";
 import AssignmentInput from "@/components/budget/assignment-input";
+import CategoryDeleteDialog from "@/components/budget/category-delete-dialog";
 import CategoryEditor from "@/components/budget/category-editor";
 import MonthlyTemplateDialog from "@/components/budget/monthly-template-dialog";
 import MoveMoneyDialog from "@/components/budget/move-money-dialog";
 import { EmptyState } from "@/components/empty-state";
+import { IconButton } from "@/components/icon-button";
 import { MonthPicker } from "@/components/month-picker";
 import { PageHeading } from "@/components/page-heading";
 import { Stat } from "@/components/stat";
@@ -23,6 +32,8 @@ export default function Budget() {
 		setFilter,
 		editor,
 		setEditor,
+		deleting,
+		setDeleting,
 		moving,
 		setMoving,
 		templateOpen,
@@ -33,7 +44,7 @@ export default function Budget() {
 		money,
 		visible,
 		groups,
-		assignedByGroup,
+		neededByGroup,
 	} = useBudget();
 	return (
 		<>
@@ -154,18 +165,10 @@ export default function Budget() {
 									}}
 								/>
 								<span className="truncate">{group}</span>
-								<span
-									className="shrink-0 text-xs"
-									aria-label={`${visible.filter((item) => item.group === group).length} categories`}
-								>
-									{visible.filter((item) => item.group === group).length}
+								<span className="shrink-0 tabular-nums text-foreground">
+									{money(neededByGroup[group])}
 								</span>
 							</span>
-							<span className="text-right tabular-nums whitespace-nowrap text-foreground">
-								{money(assignedByGroup[group])}
-							</span>
-							<span aria-hidden="true" />
-							<span aria-hidden="true" />
 						</button>
 						{!collapsed.includes(group) &&
 							visible
@@ -191,22 +194,41 @@ export default function Budget() {
 											className="grid grid-cols-[minmax(190px,_1fr)_150px_150px_160px] items-center gap-4 min-h-16 px-3 py-2 border-b border-border [&:last-child]:border-b-0 [&>.numeric]:text-right [&>.numeric]:text-sm max-[1200px]:grid-cols-[minmax(190px,_1fr)_110px_115px_120px] max-[1200px]:gap-2.5 max-[680px]:grid-cols-[minmax(155px,_1fr)_85px_85px_100px] max-[680px]:min-w-128.75 max-[680px]:pl-2.25 max-[680px]:pr-2.25 max-[680px]:gap-1.5 max-[680px]:[&>.numeric]:text-sm print:break-inside-avoid"
 											key={category.id}
 										>
-											<button
-												type="button"
-												className="flex items-center gap-4 p-0 text-left min-w-0 [&>span:last-child]:flex [&>span:last-child]:flex-col [&>span:last-child]:gap-1.25 [&_strong]:text-sm [&_.small]:text-sm [&:hover_strong]:underline [&:hover_strong]:underline-offset-1 max-[680px]:[&_strong]:text-sm max-[680px]:[&_.small]:text-sm"
-												onClick={() => setEditor(category)}
-											>
-												<span>
-													<strong>{category.name}</strong>
-													<span className="text-muted-foreground small text-sm">
-														{values.needed > 0
-															? `${money(values.needed)} to go`
-															: category.target
-																? "Funded"
-																: category.note || ""}
+											<div className="flex min-w-0 items-center gap-1">
+												<button
+													type="button"
+													className="flex min-w-0 flex-1 items-center gap-4 p-0 text-left [&>span:last-child]:flex [&>span:last-child]:min-w-0 [&>span:last-child]:flex-col [&>span:last-child]:gap-1.25 [&_strong]:block [&_strong]:truncate [&_strong]:text-sm [&_.small]:block [&_.small]:truncate [&_.small]:text-sm [&:hover_strong]:underline [&:hover_strong]:underline-offset-1 max-[680px]:[&_strong]:text-sm max-[680px]:[&_.small]:text-sm"
+													onClick={() => setEditor(category)}
+												>
+													<span>
+														<strong>{category.name}</strong>
+														<span className="text-muted-foreground small text-sm">
+															{values.needed > 0
+																? `${money(values.needed)} to go`
+																: category.target
+																	? "Funded"
+																	: category.note || ""}
+														</span>
 													</span>
-												</span>
-											</button>
+												</button>
+												<div className="flex shrink-0 items-center gap-0.5 print:hidden">
+													<IconButton
+														size="icon-xs"
+														label={`Edit ${category.name}`}
+														onClick={() => setEditor(category)}
+													>
+														<Pencil size={14} />
+													</IconButton>
+													<IconButton
+														size="icon-xs"
+														label={`Delete ${category.name}`}
+														className="hover:text-destructive"
+														onClick={() => setDeleting(category)}
+													>
+														<Trash2 size={14} />
+													</IconButton>
+												</div>
+											</div>
 											<AssignmentInput
 												key={`${category.id}-${month}-${values.assigned}`}
 												category={category}
@@ -260,6 +282,12 @@ export default function Budget() {
 				<CategoryEditor
 					category={editor === "new" ? undefined : editor}
 					onClose={() => setEditor(null)}
+				/>
+			)}
+			{deleting && (
+				<CategoryDeleteDialog
+					category={deleting}
+					onClose={() => setDeleting(null)}
 				/>
 			)}
 			{moving && <MoveMoneyDialog onClose={() => setMoving(false)} />}
