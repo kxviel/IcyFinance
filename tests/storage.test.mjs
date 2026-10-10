@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { after, test } from "node:test";
+
 import { clearMocks, mockIPC } from "@tauri-apps/api/mocks";
+
 import { exportDocument } from "../src/lib/backups.ts";
 import { createEmptyBudget } from "../src/lib/budget-seed.ts";
 import { validateBudget } from "../src/lib/budget-validation.ts";
@@ -44,6 +46,8 @@ const fixture = () => ({
 
 test("storage bridge loads old documents without automatically rewriting them", async () => {
 	const old = fixture();
+	old.schemaVersion = 1;
+	delete old.defaultOverspendingPolicy;
 	delete old.monthlyTemplate;
 	delete old.safeToSpendCategoryIds;
 	delete old.accounts[0].purpose;
@@ -54,6 +58,8 @@ test("storage bridge loads old documents without automatically rewriting them", 
 		return contents;
 	});
 	const loaded = await loadBudget();
+	assert.equal(loaded.schemaVersion, 2);
+	assert.equal(loaded.defaultOverspendingPolicy, "carry");
 	assert.deepEqual(loaded.monthlyTemplate, {});
 	assert.deepEqual(loaded.safeToSpendCategoryIds, []);
 	assert.deepEqual(commands, ["load_budget"]);

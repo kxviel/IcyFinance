@@ -74,12 +74,17 @@ beforeEach(() =>
 );
 afterEach(() => mock.timers.reset());
 
-test("A: old v1 document loads with safe additive defaults", () => {
+test("A: v1 documents migrate to v2 with carry behavior and safe additive defaults", () => {
 	const old = fixture();
+	old.schemaVersion = 1;
+	delete old.defaultOverspendingPolicy;
+	old.categories[0].overspendingPolicy = "deduct-from-next-ready";
 	delete old.monthlyTemplate;
 	delete old.safeToSpendCategoryIds;
 	const doc = validateBudget(JSON.parse(JSON.stringify(old)));
-	assert.equal(doc.schemaVersion, 1);
+	assert.equal(doc.schemaVersion, 2);
+	assert.equal(doc.defaultOverspendingPolicy, "carry");
+	assert.equal(doc.categories[0].overspendingPolicy, undefined);
 	assert.deepEqual(doc.monthlyTemplate, {});
 	assert.deepEqual(doc.safeToSpendCategoryIds, []);
 	assert.equal(doc.accounts[0].purpose, undefined);
@@ -218,6 +223,87 @@ test("uncategorized income increases RTA, categorized refunds reduce spending, t
 	assert.equal(budgetSummary(doc, month).readyToAssign, ready + 5000);
 });
 
+test("carry policy keeps negative envelopes in the next month's opening balance", () => {
+	let doc = fixture();
+	doc = setAssignment(doc, "groceries", "2024-01", 10000);
+	doc = upsertTransaction(
+		doc,
+		transaction({
+			id: "january-overspending",
+			date: "2024-01-20",
+			amount: -15000,
+		}),
+	);
+	const january = categorySummary(doc, "groceries", "2024-01");
+	const february = categorySummary(doc, "groceries", "2024-02");
+	assert.equal(january.openingBalance, 0);
+	assert.equal(january.closingBalance, -5000);
+	assert.equal(january.carriedBalance, -5000);
+	assert.equal(january.rtaAdjustment, 0);
+	assert.equal(february.openingBalance, -5000);
+	assert.equal(february.closingBalance, -5000);
+	assert.equal(budgetSummary(doc, "2024-01").readyToAssign, 90000);
+	assert.equal(budgetSummary(doc, "2024-02").readyToAssign, 90000);
+});
+
+test("deduct policy resets a deficit and lowers the next month's Ready to Assign", () => {
+	let doc = fixture();
+	doc.defaultOverspendingPolicy = "deduct-from-next-ready";
+	doc = setAssignment(doc, "groceries", "2024-01", 10000);
+	doc = upsertTransaction(
+		doc,
+		transaction({
+			id: "january-overspending",
+			date: "2024-01-20",
+			amount: -15000,
+		}),
+	);
+	const january = categorySummary(doc, "groceries", "2024-01");
+	const february = categorySummary(doc, "groceries", "2024-02");
+	const march = categorySummary(doc, "groceries", "2024-03");
+	assert.equal(january.closingBalance, -5000);
+	assert.equal(january.carriedBalance, 0);
+	assert.equal(january.rtaAdjustment, -5000);
+	assert.equal(february.openingBalance, 0);
+	assert.equal(february.closingBalance, 0);
+	assert.equal(march.openingBalance, 0);
+	assert.equal(budgetSummary(doc, "2024-01").readyToAssign, 90000);
+	assert.equal(budgetSummary(doc, "2024-02").readyToAssign, 85000);
+	assert.equal(budgetSummary(doc, "2024-03").readyToAssign, 85000);
+});
+
+test("category policy overrides the default while positive balances always carry", () => {
+	let doc = fixture();
+	doc.defaultOverspendingPolicy = "deduct-from-next-ready";
+	doc.categories.find((item) => item.id === "groceries").overspendingPolicy =
+		"carry";
+	doc.categories.find((item) => item.id === "shopping").overspendingPolicy =
+		"deduct-from-next-ready";
+	doc = setAssignment(doc, "groceries", "2024-01", 10000);
+	doc = setAssignment(doc, "shopping", "2024-01", 10000);
+	doc = setAssignment(doc, "other", "2024-01", 10000);
+	for (const [id, categoryId] of [
+		["carry-expense", "groceries"],
+		["reset-expense", "shopping"],
+	]) {
+		doc = upsertTransaction(
+			doc,
+			transaction({
+				id,
+				date: "2024-01-20",
+				amount: -15000,
+				categoryId,
+			}),
+		);
+	}
+	assert.equal(
+		categorySummary(doc, "groceries", "2024-02").openingBalance,
+		-5000,
+	);
+	assert.equal(categorySummary(doc, "shopping", "2024-02").openingBalance, 0);
+	assert.equal(categorySummary(doc, "other", "2024-02").openingBalance, 10000);
+});
+
 test("I: schedules affect nothing until posted; posting advances once atomically", () => {
 	const doc = funded();
 	doc.schedules = [
@@ -286,7 +372,9 @@ test("J: deleting unused categories cleans both references; financial history bl
 
 test("K: validation/JSON backup round-trip preserves feature and extension data", () => {
 	const doc = fixture();
+	doc.defaultOverspendingPolicy = "deduct-from-next-ready";
 	doc.accounts[0].purpose = "investments";
+	doc.categories[0].overspendingPolicy = "carry";
 	doc.extension = { nested: ["unknown but valid", 42] };
 	doc.accounts[0].extension = "account metadata";
 	doc.categories[0].extension = "category metadata";
@@ -296,6 +384,8 @@ test("K: validation/JSON backup round-trip preserves feature and extension data"
 	const assigned = applyMonthlyTemplate(imported, month);
 	assert.deepEqual(assigned.extension, doc.extension);
 	assert.equal(assigned.accounts[0].extension, "account metadata");
+	assert.equal(assigned.defaultOverspendingPolicy, "deduct-from-next-ready");
+	assert.equal(assigned.categories[0].overspendingPolicy, "carry");
 });
 
 test("purpose stays metadata for every account kind and allowed purpose", () => {
@@ -450,9 +540,19 @@ test("validation rejects malformed feature data, even when applying would otherw
 		/category is required/,
 	);
 	assert.throws(
-		() => validateBudget({ ...fixture(), schemaVersion: 2 }),
+		() => validateBudget({ ...fixture(), schemaVersion: 3 }),
 		/unsupported schema/,
 	);
+	for (const value of [undefined, "reset", null, 1]) {
+		const doc = fixture();
+		doc.defaultOverspendingPolicy = value;
+		assert.throws(() => validateBudget(doc), /defaultOverspendingPolicy/);
+	}
+	for (const value of ["reset", null, 1]) {
+		const doc = fixture();
+		doc.categories[0].overspendingPolicy = value;
+		assert.throws(() => validateBudget(doc), /overspendingPolicy/);
+	}
 	const purpose = fixture();
 	purpose.accounts[0].purpose = "invalid";
 	assert.throws(() => validateBudget(purpose), /purpose/);
@@ -500,6 +600,8 @@ test("known transfer status fields are validated while extension data survives",
 	);
 	assert.deepEqual(
 		validateBudget(JSON.parse(JSON.stringify(valid))).transactions[0].extra,
-		{ imported: true },
+		{
+			imported: true,
+		},
 	);
 });

@@ -1,19 +1,19 @@
 import type { ReactNode } from "react";
 
 export function EmptyState({
-	title,
-	description,
-	action,
+  title,
+  description,
+  action,
 }: {
-	title: string;
-	description: string;
-	action?: ReactNode;
+  title: string;
+  description: string;
+  action?: ReactNode;
 }) {
-	return (
-		<div className="flex flex-col items-start gap-2 border-b py-6">
-			<h3 className="text-sm font-medium">{title}</h3>
-			<p className="text-sm text-muted-foreground">{description}</p>
-			{action && <div className="mt-1">{action}</div>}
-		</div>
-	);
+  return (
+    <div className="empty-state">
+      <h3>{title}</h3>
+      <p>{description}</p>
+      {action && <div className="mt-5">{action}</div>}
+    </div>
+  );
 }

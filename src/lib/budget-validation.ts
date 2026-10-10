@@ -3,6 +3,7 @@ import type {
 	Allocation,
 	BudgetDocument,
 	Category,
+	OverspendingPolicy,
 	ScheduledTransaction,
 	Transaction,
 	TransactionSplit,
@@ -82,14 +83,44 @@ const unique = (items: { id: string }[], path: string): void => {
 	}
 };
 
-/** Validate known fields while preserving extension data in v1 backups. */
-export const validateBudget = (value: unknown): BudgetDocument => {
+const overspendingPolicy = (value: unknown, path: string): OverspendingPolicy =>
+	choice(value, ["carry", "deduct-from-next-ready"] as const, path);
+
+/** Upgrade persisted documents without mutating the imported value. */
+export const migrateBudget = (value: unknown): unknown => {
 	const root = record(value, "Budget");
+	if (root.schemaVersion === 2) return root;
 	if (root.schemaVersion !== 1)
 		fail(
 			"Budget",
 			"unsupported schema version. Export this budget using a compatible IcyFinance version.",
 		);
+	return {
+		...root,
+		schemaVersion: 2,
+		// Version 1 always carried negative balances, so this preserves its ledger.
+		defaultOverspendingPolicy: "carry",
+		categories: Array.isArray(root.categories)
+			? root.categories.map((value) => {
+					if (
+						typeof value !== "object" ||
+						value === null ||
+						Array.isArray(value)
+					)
+						return value;
+					// The field did not exist in v1; do not reinterpret extension data as
+					// a policy override during migration.
+					const category = { ...(value as Record<string, unknown>) };
+					delete category.overspendingPolicy;
+					return category;
+				})
+			: root.categories,
+	};
+};
+
+/** Migrate, then validate known fields while preserving extension data. */
+export const validateBudget = (value: unknown): BudgetDocument => {
+	const root = record(migrateBudget(value), "Budget");
 	const accounts = array<Account>(
 		root.accounts,
 		"Accounts",
@@ -132,6 +163,8 @@ export const validateBudget = (value: unknown): BudgetDocument => {
 		"Categories",
 		(value, path) => {
 			const item = record(value, path);
+			const extensions = { ...item };
+			delete extensions.overspendingPolicy;
 			let target: Category["target"] = null;
 			if (item.target !== null) {
 				const raw = record(item.target, `${path}.target`);
@@ -148,12 +181,20 @@ export const validateBudget = (value: unknown): BudgetDocument => {
 					target.dueDate = date(raw.dueDate, `${path}.target.dueDate`);
 			}
 			return {
-				...item,
+				...extensions,
 				id: id(item.id, `${path}.id`),
 				name: text(item.name, `${path}.name`, 100),
 				group: text(item.group, `${path}.group`, 100),
 				note: text(item.note, `${path}.note`, 2000, true),
 				hidden: bool(item.hidden, `${path}.hidden`),
+				...(item.overspendingPolicy === undefined
+					? {}
+					: {
+							overspendingPolicy: overspendingPolicy(
+								item.overspendingPolicy,
+								`${path}.overspendingPolicy`,
+							),
+						}),
 				target,
 			};
 		},
@@ -392,10 +433,14 @@ export const validateBudget = (value: unknown): BudgetDocument => {
 		fail("Budget", "aggregate amounts exceed the safe integer range.");
 	return {
 		...root,
-		schemaVersion: 1,
+		schemaVersion: 2,
 		id: id(root.id, "Budget identifier"),
 		name: text(root.name, "Budget name", 100),
 		currency,
+		defaultOverspendingPolicy: overspendingPolicy(
+			root.defaultOverspendingPolicy,
+			"Budget.defaultOverspendingPolicy",
+		),
 		accounts,
 		categories,
 		allocations,

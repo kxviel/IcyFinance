@@ -1,7 +1,7 @@
 import { type FormEvent, useState } from "react";
 import { useWorkspace } from "@/hooks/use-workspace";
 import { deleteCategory } from "@/lib/budget";
-import type { Category } from "@/lib/budget-types";
+import type { Category, OverspendingPolicy } from "@/lib/budget-types";
 import { message } from "@/lib/errors";
 import { inputMoney, parseMoney } from "@/lib/money";
 
@@ -23,6 +23,9 @@ export const useCategoryEditor = ({
 		category?.target?.cadence || "monthly",
 	);
 	const [dueDate, setDueDate] = useState(category?.target?.dueDate || "");
+	const [overspendingPolicy, setOverspendingPolicy] = useState<
+		OverspendingPolicy | ""
+	>(category?.overspendingPolicy ?? "");
 	const [error, setError] = useState("");
 	const [confirmDelete, setConfirmDelete] = useState(false);
 	function remove() {
@@ -51,6 +54,7 @@ export const useCategoryEditor = ({
 				group: group.trim(),
 				note,
 				hidden: category?.hidden || false,
+				overspendingPolicy: overspendingPolicy || undefined,
 				target:
 					amount === null
 						? null
@@ -89,6 +93,8 @@ export const useCategoryEditor = ({
 		setCadence,
 		dueDate,
 		setDueDate,
+		overspendingPolicy,
+		setOverspendingPolicy,
 		error,
 		confirmDelete,
 		setConfirmDelete,

@@ -14,6 +14,7 @@ import {
 	type Replacement,
 } from "@/lib/backups";
 import { createEmptyBudget } from "@/lib/budget-seed";
+import type { OverspendingPolicy } from "@/lib/budget-types";
 import { validateBudget } from "@/lib/budget-validation";
 import { message } from "@/lib/errors";
 import { getDatabaseStatus } from "@/lib/storage";
@@ -23,6 +24,8 @@ export const useSettings = () => {
 	const { replace, isDirty } = useBudgetStore();
 	const [name, setName] = useState(doc.name);
 	const [currency, setCurrency] = useState(doc.currency);
+	const [defaultOverspendingPolicy, setDefaultOverspendingPolicy] =
+		useState<OverspendingPolicy>(doc.defaultOverspendingPolicy);
 	const [database, setDatabase] = useState({
 		text: "Checking SQLite…",
 		pending: true,
@@ -45,7 +48,8 @@ export const useSettings = () => {
 	useEffect(() => {
 		setName(doc.name);
 		setCurrency(doc.currency);
-	}, [doc.id, doc.name, doc.currency]);
+		setDefaultOverspendingPolicy(doc.defaultOverspendingPolicy);
+	}, [doc.id, doc.name, doc.currency, doc.defaultOverspendingPolicy]);
 
 	useEffect(() => {
 		mounted.current = true;
@@ -97,7 +101,12 @@ export const useSettings = () => {
 					throw new Error(
 						"Start an empty budget before choosing another currency. Existing amounts are never converted.",
 					);
-				return { ...document, name: name.trim(), currency };
+				return {
+					...document,
+					name: name.trim(),
+					currency,
+					defaultOverspendingPolicy,
+				};
 			});
 			notify("Budget details updated.");
 		} catch (error) {
@@ -170,6 +179,8 @@ export const useSettings = () => {
 		setName,
 		currency,
 		setCurrency,
+		defaultOverspendingPolicy,
+		setDefaultOverspendingPolicy,
 		database,
 		setDatabaseAttempt,
 		busy,

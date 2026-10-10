@@ -2,20 +2,18 @@ import { ArrowUpRight } from "lucide-react";
 import type { ReactNode } from "react";
 
 export function SectionLink({
-	children,
-	onClick,
+  children,
+  onClick,
+  disabled,
 }: {
-	children: ReactNode;
-	onClick: () => void;
+  children: ReactNode;
+  onClick: () => void;
+  disabled?: boolean;
 }) {
-	return (
-		<button
-			type="button"
-			className="inline-flex items-center gap-2 text-sm px-0 py-1.25 text-muted-foreground no-underline hover:text-foreground"
-			onClick={onClick}
-		>
-			{children}
-			<ArrowUpRight size={16} />
-		</button>
-	);
+  return (
+    <button type="button" className="section-link" onClick={onClick} disabled={disabled}>
+      {children}
+      <ArrowUpRight size={16} />
+    </button>
+  );
 }

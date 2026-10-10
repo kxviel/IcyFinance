@@ -1,4 +1,9 @@
-import type { BudgetDocument, Category, Transaction } from "@/lib/budget-types";
+import type {
+	BudgetDocument,
+	Category,
+	OverspendingPolicy,
+	Transaction,
+} from "@/lib/budget-types";
 import { validateBudget } from "@/lib/budget-validation";
 import {
 	addFrequency,
@@ -102,37 +107,87 @@ export const transactionsForMonth = (
 		.sort((a, b) => b.date.localeCompare(a.date) || a.id.localeCompare(b.id));
 };
 
+export interface CategoryMonthLedger {
+	month: string;
+	openingBalance: number;
+	assigned: number;
+	activity: number;
+	closingBalance: number;
+	/** The balance that opens the next month. Positive balances always carry. */
+	carriedBalance: number;
+	/** A negative amount deducted from next month's Ready to Assign. */
+	rtaAdjustment: number;
+	available: number;
+	overspendingPolicy: OverspendingPolicy;
+}
+
+export const effectiveOverspendingPolicy = (
+	doc: BudgetDocument,
+	category: Category,
+): OverspendingPolicy =>
+	category.overspendingPolicy ?? doc.defaultOverspendingPolicy;
+
+/**
+ * Derive one envelope month by month. Reset deficits become a zero carry and the
+ * resulting increase in envelope balances is the matching reduction in RTA.
+ */
 const categoryNumbers = (
 	doc: BudgetDocument,
 	categoryId: string,
 	month: string,
 	postedThrough = today(),
-) => {
+): CategoryMonthLedger => {
 	assertMonth(month);
-	categoryById(doc, categoryId);
-	const assigned = sum(
-		doc.allocations
-			.filter((item) => item.categoryId === categoryId && item.month === month)
-			.map((item) => item.amount),
-	);
-	const totalAssigned = sum(
-		doc.allocations
-			.filter((item) => item.categoryId === categoryId && item.month <= month)
-			.map((item) => item.amount),
-	);
-	let activity = 0;
-	let totalActivity = 0;
+	const category = categoryById(doc, categoryId);
+	const overspendingPolicy = effectiveOverspendingPolicy(doc, category);
+	const months = new Map<string, { assigned: number; activity: number }>();
+	const rowFor = (eventMonth: string) => {
+		const current = months.get(eventMonth);
+		if (current) return current;
+		const created = { assigned: 0, activity: 0 };
+		months.set(eventMonth, created);
+		return created;
+	};
+	rowFor(month);
+	for (const allocation of doc.allocations) {
+		if (allocation.categoryId !== categoryId || allocation.month > month)
+			continue;
+		const row = rowFor(allocation.month);
+		row.assigned = sum([row.assigned, allocation.amount]);
+	}
 	for (const tx of doc.transactions) {
 		if (tx.date.slice(0, 7) > month || tx.date > postedThrough) continue;
 		for (const part of budgetParts(doc, tx)) {
 			if (part.categoryId !== categoryId) continue;
-			totalActivity = sum([totalActivity, part.amount]);
-			if (tx.date.slice(0, 7) === month)
-				activity = sum([activity, part.amount]);
+			const row = rowFor(tx.date.slice(0, 7));
+			row.activity = sum([row.activity, part.amount]);
 		}
 	}
-	// Every category carries both surplus and overspending into the next month.
-	return { assigned, activity, available: sum([totalAssigned, totalActivity]) };
+	let carriedBalance = 0;
+	for (const eventMonth of [...months.keys()].sort()) {
+		const row = months.get(eventMonth);
+		if (!row) continue;
+		const openingBalance = carriedBalance;
+		const closingBalance = sum([openingBalance, row.assigned, row.activity]);
+		const rtaAdjustment =
+			closingBalance < 0 && overspendingPolicy === "deduct-from-next-ready"
+				? closingBalance
+				: 0;
+		carriedBalance = rtaAdjustment < 0 ? 0 : closingBalance;
+		if (eventMonth === month)
+			return {
+				month,
+				openingBalance,
+				assigned: row.assigned,
+				activity: row.activity,
+				closingBalance,
+				carriedBalance,
+				rtaAdjustment,
+				available: closingBalance,
+				overspendingPolicy,
+			};
+	}
+	throw new Error("Could not calculate this category month.");
 };
 
 export interface TargetProgress {

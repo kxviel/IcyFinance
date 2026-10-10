@@ -1,4 +1,5 @@
 export type AccountKind = "checking" | "savings" | "cash" | "tracking";
+export type OverspendingPolicy = "carry" | "deduct-from-next-ready";
 export type AccountPurpose =
 	| "bills"
 	| "spending"
@@ -23,6 +24,8 @@ export interface Category {
 	group: string;
 	note: string;
 	hidden: boolean;
+	/** Overrides the budget default for negative balances at a month boundary. */
+	overspendingPolicy?: OverspendingPolicy;
 	target: {
 		amount: number;
 		cadence: "monthly" | "balance";
@@ -75,10 +78,11 @@ export interface ScheduledTransaction {
 }
 
 export interface BudgetDocument {
-	schemaVersion: 1;
+	schemaVersion: 2;
 	id: string;
 	name: string;
 	currency: string;
+	defaultOverspendingPolicy: OverspendingPolicy;
 	accounts: Account[];
 	categories: Category[];
 	allocations: Allocation[];
